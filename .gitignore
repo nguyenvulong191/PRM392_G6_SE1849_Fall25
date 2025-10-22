@@ -1,0 +1,19 @@
+# Android / Gradle
+.idea/
+.gradle/
+local.properties
+**/build/
+.cxx/
+.externalNativeBuild/
+captures/
+
+# Project files
+*.iml
+*.log
+
+# Keystore (đừng commit)
+*.jks
+*.keystore
+
+# OS
+.DS_Store
