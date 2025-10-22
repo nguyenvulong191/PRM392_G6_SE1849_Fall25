@@ -13,6 +13,7 @@
         android:theme="@style/Theme.Hotel_Booking">
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".WelcomeActivity"
             android:exported="true">
