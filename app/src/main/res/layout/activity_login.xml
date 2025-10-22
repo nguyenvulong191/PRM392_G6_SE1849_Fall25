@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- BG ảnh + overlay -->
+    <ImageView
+        android:id="@+id/bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/bg_welcome"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/bg_overlay_gradient"
+        app:layout_constraintTop_toTopOf="@id/bg"
+        app:layout_constraintBottom_toBottomOf="@id/bg"
+        app:layout_constraintStart_toStartOf="@id/bg"
+        app:layout_constraintEnd_toEndOf="@id/bg"/>
+
+    <!-- Nội dung -->
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Hotel App"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:shadowColor="#40000000"
+            android:shadowDx="0" android:shadowDy="2" android:shadowRadius="4"/>
+
+        <TextView
+            android:id="@+id/tvScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:layout_marginTop="6dp"/>
+
+        <!-- Spacer -->
+        <View android:layout_width="0dp" android:layout_height="24dp"/>
+
+        <!-- Field: Email -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="261dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="Email Address"
+                android:inputType="textEmailAddress"
+                android:padding="0dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="#CCFFFFFF" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#66FFFFFF"
+            android:layout_marginBottom="14dp"/>
+
+        <!-- Field: Password -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:hint="Password"
+                android:textColor="@android:color/white"
+                android:textColorHint="#CCFFFFFF"
+                android:inputType="textPassword"
+                android:background="@android:color/transparent"
+                android:padding="0dp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#66FFFFFF"
+            android:layout_marginBottom="18dp"/>
+
+        <!-- Button Login (gradient xanh, bo tròn) -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Login"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/btn_primary_rounded"
+            android:backgroundTint="@null"
+            app:backgroundTint="@null"/>
+
+        <!-- Link sang Register -->
+        <TextView
+            android:id="@+id/tvToRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Don't have an account?  Register"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="14dp"/>
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
