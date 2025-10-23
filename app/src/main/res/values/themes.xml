@@ -3,6 +3,9 @@
     <style name="Base.Theme.Hotel_Booking" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/brand_end</item>
+        <item name="android:windowLightStatusBar">false</item>
+
     </style>
 
     <style name="Theme.Hotel_Booking" parent="Base.Theme.Hotel_Booking" />
