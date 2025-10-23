@@ -1,23 +1,34 @@
 package com.example.hotel_booking;
 
 import android.os.Bundle;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.hotel_booking.model.Category;
 import com.example.hotel_booking.model.HotelCard;
 import com.example.hotel_booking.ui.CategoryAdapter;
 import com.example.hotel_booking.ui.HotelCardAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String name = getSharedPreferences("hotel_auth", MODE_PRIVATE)
+                .getString("full_name", "Guest");
 
-        // Categories (horizontal)
+        String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
+
+        TextView tvHello = findViewById(R.id.tvHello); // đã có trong layout
+        tvHello.setText("Hello " + first);
+
         RecyclerView rvCat = findViewById(R.id.rvCategories);
         rvCat.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvCat.setAdapter(new CategoryAdapter(this, demoCategories()));
@@ -26,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView rvHotels = findViewById(R.id.rvHotels);
         rvHotels.setLayoutManager(new LinearLayoutManager(this));
         rvHotels.setAdapter(new HotelCardAdapter(this, demoHotels(), card -> {
-            // TODO: mở chi tiết nếu muốn (sau này)
+
         }));
     }
 

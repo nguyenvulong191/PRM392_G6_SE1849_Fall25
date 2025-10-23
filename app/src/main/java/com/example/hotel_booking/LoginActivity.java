@@ -47,9 +47,20 @@ public class LoginActivity extends AppCompatActivity {
                 boolean ok = repo.checkLogin(email, pass);
                 runOnUiThread(() -> {
                     if (ok) {
-                        Intent i = new Intent(this, MainActivity.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(i);
+                        AppExecutors.io().execute(() -> {
+                            String fullName = repo.getNameByEmail(email); // lấy tên
+                            runOnUiThread(() -> {
+                                getSharedPreferences("hotel_auth", MODE_PRIVATE)
+                                        .edit()
+                                        .putBoolean("logged_in", true)
+                                        .putString("email", email)
+                                        .putString("full_name", fullName)
+                                        .apply();
+                                Intent i = new Intent(this, MainActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(i);
+                            });
+                        });
                     } else {
                         android.widget.Toast.makeText(this, "Sai email hoặc mật khẩu", android.widget.Toast.LENGTH_SHORT).show();
                     }
