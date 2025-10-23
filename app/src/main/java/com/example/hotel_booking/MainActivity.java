@@ -9,12 +9,10 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.hotel_booking.model.Category;
 import com.example.hotel_booking.model.HotelCard;
 import com.example.hotel_booking.ui.CategoryAdapter;
 import com.example.hotel_booking.ui.HotelCardAdapter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        String name = getSharedPreferences("hotel_auth", MODE_PRIVATE)
+                .getString("full_name", "Guest");
+
+        String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
 
         // Add navigation buttons
         Button btnRooms = findViewById(R.id.btnRooms);
@@ -38,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FavoritesActivity.class);
             startActivity(intent);
         });
-
-        // Categories (horizontal)
         RecyclerView rvCat = findViewById(R.id.rvCategories);
         rvCat.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         rvCat.setAdapter(new CategoryAdapter(this, demoCategories()));
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView rvHotels = findViewById(R.id.rvHotels);
         rvHotels.setLayoutManager(new LinearLayoutManager(this));
         rvHotels.setAdapter(new HotelCardAdapter(this, demoHotels(), card -> {
+        }));
             // Navigate to room list when hotel card is clicked
             Intent intent = new Intent(this, RoomListActivity.class);
             startActivity(intent);
-        }));
     }
 
     @Override
@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     private List<Category> demoCategories() {
         List<Category> list = new ArrayList<>();
         list.add(new Category("Hotels", R.mipmap.ic_launcher_round));

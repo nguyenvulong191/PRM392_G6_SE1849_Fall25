@@ -57,4 +57,20 @@ public class UserRepository {
             if (c != null) c.close();
         }
     }
+    public String getNameByEmail(String email) {
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor c = null;
+        try {
+            c = db.query(UserDbHelper.T_USERS,
+                    new String[]{UserDbHelper.C_NAME},
+                    UserDbHelper.C_EMAIL + "=?",
+                    new String[]{email},
+                    null, null, "1");
+            if (c.moveToFirst()) return c.getString(0);
+            return null;
+        } finally {
+            if (c != null) c.close();
+        }
+    }
+
 }
