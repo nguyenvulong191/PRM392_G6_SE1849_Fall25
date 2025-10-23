@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="220dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="28dp"
+    android:paddingBottom="20dp"
+    android:background="@drawable/bg_toolbar_gradient">
+
+    <!-- Nhãn khu vực -->
+    <TextView
+        android:id="@+id/tvHeaderLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tài khoản"
+        android:textAllCaps="true"
+        android:textColor="#E6FFFFFF"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:letterSpacing="0.05"
+        android:background="@drawable/chip_outline_white"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_marginStart="4dp" />
+
+    <!-- Hàng chứa avatar + thông tin -->
+    <LinearLayout
+        android:id="@+id/headerRow"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp">
+
+        <!-- Avatar -->
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="76dp"
+            android:layout_height="76dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/shape_avatar_circle"
+            android:padding="4dp"
+            app:tint="@android:color/white"/>
+
+        <!-- Cột chữ -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="14dp"
+            android:gravity="center_vertical">
+
+            <!-- Tên (to hơn) -->
+            <TextView
+                android:id="@+id/tvHeaderName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guest"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="22sp"/>
+
+            <!-- Email -->
+            <TextView
+                android:id="@+id/tvHeaderEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="guest@example.com"
+                android:textColor="#E6FFFFFF"
+                android:textSize="15sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
