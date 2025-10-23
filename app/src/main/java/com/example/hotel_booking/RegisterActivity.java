@@ -1,5 +1,6 @@
 package com.example.hotel_booking;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,8 +58,18 @@ public class RegisterActivity extends AppCompatActivity {
                 long rowId = repo.insertUser(name, email, pass);
                 runOnUiThread(() -> {
                     if (rowId > 0) {
-                        android.widget.Toast.makeText(this, "Đăng ký thành công!", android.widget.Toast.LENGTH_SHORT).show();
-                        finish(); // quay về Login
+                        // Lưu phiên + tên
+                        getSharedPreferences("hotel_auth", MODE_PRIVATE)
+                                .edit()
+                                .putBoolean("logged_in", true)
+                                .putString("email", email)
+                                .putString("full_name", name)
+                                .apply();
+
+                        Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(this, MainActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     } else {
                         android.widget.Toast.makeText(this, "Lỗi khi đăng ký!", android.widget.Toast.LENGTH_SHORT).show();
                     }
