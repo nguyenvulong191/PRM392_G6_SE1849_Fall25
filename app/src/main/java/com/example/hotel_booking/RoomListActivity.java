@@ -3,11 +3,10 @@ package com.example.hotel_booking;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +17,11 @@ import com.example.hotel_booking.adapter.RoomAdapter;
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.RoomRepository;
 import com.example.hotel_booking.data.entity.Room;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +32,19 @@ public class RoomListActivity extends AppCompatActivity {
     private RoomRepository roomRepository;
     private List<Room> roomList = new ArrayList<>();
     private ProgressBar progressBar;
-    private Button btnLoadMore, btnFilter, btnBack;
-    private EditText etLocation, etMinPrice, etMaxPrice;
-    private Spinner spinnerRoomType, spinnerSort;
+    private LinearLayout layoutProgress, layoutEmptyState, layoutFilterOptions;
+    private MaterialButton btnLoadMore, btnFilter, btnClearFilter, btnResetSearch;
+    private ImageButton btnBack, btnToggleFilter, btnGridToggle;
+    private FloatingActionButton fabQuickFilter;
+    private TextInputEditText etLocation, etMinPrice, etMaxPrice;
+    private ChipGroup chipGroupRoomType, chipGroupSort;
+    private TextView tvResultsCount;
 
     private int currentPage = 0;
     private final int PAGE_SIZE = 10;
     private boolean isLoading = false;
     private boolean isFiltering = false;
+    private boolean isFilterExpanded = false;
     private String currentSortBy = "price_asc";
 
     @Override
@@ -45,24 +54,38 @@ public class RoomListActivity extends AppCompatActivity {
 
         initViews();
         setupRecyclerView();
-        setupSpinners();
+        setupChipGroups();
         setupClickListeners();
 
         roomRepository = new RoomRepository(this);
-        loadRooms();
+
+        // Load all rooms initially (show everything first)
+        loadAllRooms();
     }
 
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBar);
+        layoutProgress = findViewById(R.id.layoutProgress);
+        layoutEmptyState = findViewById(R.id.layoutEmptyState);
+        layoutFilterOptions = findViewById(R.id.layoutFilterOptions);
+
         btnLoadMore = findViewById(R.id.btnLoadMore);
         btnFilter = findViewById(R.id.btnFilter);
+        btnClearFilter = findViewById(R.id.btnClearFilter);
+        btnResetSearch = findViewById(R.id.btnResetSearch);
         btnBack = findViewById(R.id.btnBack);
+        btnToggleFilter = findViewById(R.id.btnToggleFilter);
+        btnGridToggle = findViewById(R.id.btnGridToggle);
+        fabQuickFilter = findViewById(R.id.fabQuickFilter);
+
         etLocation = findViewById(R.id.etLocation);
         etMinPrice = findViewById(R.id.etMinPrice);
         etMaxPrice = findViewById(R.id.etMaxPrice);
-        spinnerRoomType = findViewById(R.id.spinnerRoomType);
-        spinnerSort = findViewById(R.id.spinnerSort);
+
+        chipGroupRoomType = findViewById(R.id.chipGroupRoomType);
+        chipGroupSort = findViewById(R.id.chipGroupSort);
+        tvResultsCount = findViewById(R.id.tvResultsCount);
     }
 
     private void setupRecyclerView() {
@@ -71,41 +94,95 @@ public class RoomListActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupSpinners() {
-        // Room type spinner
-        String[] roomTypes = {"Tất cả", "Single", "Double", "Suite", "Deluxe", "Family"};
-        ArrayAdapter<String> roomTypeAdapter = new ArrayAdapter<>(this,
-            android.R.layout.simple_spinner_item, roomTypes);
-        roomTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerRoomType.setAdapter(roomTypeAdapter);
+    private void setupChipGroups() {
+        // Set default selections
+        chipGroupRoomType.check(R.id.chipAll);
+        chipGroupSort.check(R.id.chipPriceAsc);
 
-        // Sort spinner
-        String[] sortOptions = {"Giá tăng dần", "Giá giảm dần", "Đánh giá cao nhất"};
-        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
-            android.R.layout.simple_spinner_item, sortOptions);
-        sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSort.setAdapter(sortAdapter);
+        // Setup listeners for automatic filtering when chips are selected
+        chipGroupRoomType.setOnCheckedChangeListener((group, checkedId) -> {
+            if (isFiltering) {
+                filterRooms();
+            }
+        });
+
+        chipGroupSort.setOnCheckedChangeListener((group, checkedId) -> {
+            currentSortBy = getSortByFromChip(checkedId);
+            if (isFiltering) {
+                filterRooms();
+            } else {
+                // If not filtering, just re-sort current results
+                loadAllRooms();
+            }
+        });
     }
 
     private void setupClickListeners() {
         btnLoadMore.setOnClickListener(v -> loadMoreRooms());
         btnFilter.setOnClickListener(v -> filterRooms());
+        btnClearFilter.setOnClickListener(v -> clearFilters());
+        btnResetSearch.setOnClickListener(v -> clearFilters());
         btnBack.setOnClickListener(v -> finish());
+
+        btnToggleFilter.setOnClickListener(v -> toggleFilterOptions());
+        fabQuickFilter.setOnClickListener(v -> toggleFilterOptions());
+
+        // Auto-search when typing in location
+        etLocation.setOnEditorActionListener((v, actionId, event) -> {
+            filterRooms();
+            return true;
+        });
+    }
+
+    private void toggleFilterOptions() {
+        isFilterExpanded = !isFilterExpanded;
+        layoutFilterOptions.setVisibility(isFilterExpanded ? View.VISIBLE : View.GONE);
+
+        // Rotate the expand icon
+        btnToggleFilter.animate()
+            .rotation(isFilterExpanded ? 180f : 0f)
+            .setDuration(200)
+            .start();
+    }
+
+    private void loadAllRooms() {
+        if (isLoading) return;
+        isLoading = true;
+        currentPage = 0;
+        isFiltering = false;
+
+        showProgressBar(true);
+
+        AppExecutors.io().execute(() -> {
+            List<Room> allRooms = roomRepository.getRoomsPaginated(currentSortBy, PAGE_SIZE, 0);
+            runOnUiThread(() -> {
+                roomList.clear();
+                roomList.addAll(allRooms);
+                adapter.notifyDataSetChanged();
+                updateResultsCount();
+                showProgressBar(false);
+                isLoading = false;
+                btnLoadMore.setVisibility(allRooms.size() == PAGE_SIZE ? View.VISIBLE : View.GONE);
+                showEmptyState(roomList.isEmpty());
+            });
+        });
     }
 
     private void loadRooms() {
         if (isLoading) return;
         isLoading = true;
-        progressBar.setVisibility(View.VISIBLE);
+        showProgressBar(true);
 
         AppExecutors.io().execute(() -> {
             List<Room> newRooms = roomRepository.getRoomsPaginated(currentSortBy, PAGE_SIZE, currentPage * PAGE_SIZE);
             runOnUiThread(() -> {
                 roomList.addAll(newRooms);
                 adapter.notifyDataSetChanged();
-                progressBar.setVisibility(View.GONE);
+                updateResultsCount();
+                showProgressBar(false);
                 isLoading = false;
                 btnLoadMore.setVisibility(newRooms.size() == PAGE_SIZE ? View.VISIBLE : View.GONE);
+                showEmptyState(roomList.isEmpty());
             });
         });
     }
@@ -123,8 +200,8 @@ public class RoomListActivity extends AppCompatActivity {
         String location = etLocation.getText().toString().trim();
         String minPriceStr = etMinPrice.getText().toString().trim();
         String maxPriceStr = etMaxPrice.getText().toString().trim();
-        String roomType = spinnerRoomType.getSelectedItem().toString();
-        currentSortBy = getSortBy();
+        String roomType = getSelectedRoomType();
+        currentSortBy = getSortByFromChip(chipGroupSort.getCheckedChipId());
 
         Double minPrice = null;
         Double maxPrice = null;
@@ -141,9 +218,6 @@ public class RoomListActivity extends AppCompatActivity {
             return;
         }
 
-        if (roomType.equals("Tất cả")) roomType = null;
-        if (location.isEmpty()) location = null;
-
         if (!isFiltering) {
             currentPage = 0;
             roomList.clear();
@@ -151,12 +225,12 @@ public class RoomListActivity extends AppCompatActivity {
         }
 
         // Make variables final for lambda
-        final String finalLocation = location;
+        final String finalLocation = location.isEmpty() ? null : location;
         final Double finalMinPrice = minPrice;
         final Double finalMaxPrice = maxPrice;
         final String finalRoomType = roomType;
 
-        progressBar.setVisibility(View.VISIBLE);
+        showProgressBar(true);
 
         AppExecutors.io().execute(() -> {
             List<Room> filteredRooms = roomRepository.searchRooms(finalLocation, finalMinPrice, finalMaxPrice,
@@ -167,20 +241,64 @@ public class RoomListActivity extends AppCompatActivity {
                 }
                 roomList.addAll(filteredRooms);
                 adapter.notifyDataSetChanged();
-                progressBar.setVisibility(View.GONE);
+                updateResultsCount();
+                showProgressBar(false);
                 btnLoadMore.setVisibility(filteredRooms.size() == PAGE_SIZE ? View.VISIBLE : View.GONE);
+                showEmptyState(roomList.isEmpty());
             });
         });
     }
 
-    private String getSortBy() {
-        int position = spinnerSort.getSelectedItemPosition();
-        switch (position) {
-            case 0: return "price_asc";
-            case 1: return "price_desc";
-            case 2: return "rating";
-            default: return "price_asc";
-        }
+    private void clearFilters() {
+        etLocation.setText("");
+        etMinPrice.setText("");
+        etMaxPrice.setText("");
+        chipGroupRoomType.check(R.id.chipAll);
+        chipGroupSort.check(R.id.chipPriceAsc);
+        currentSortBy = "price_asc";
+
+        // Collapse filter options
+        isFilterExpanded = false;
+        layoutFilterOptions.setVisibility(View.GONE);
+        btnToggleFilter.animate().rotation(0f).setDuration(200).start();
+
+        // Load all rooms again
+        loadAllRooms();
+    }
+
+    private String getSelectedRoomType() {
+        int checkedId = chipGroupRoomType.getCheckedChipId();
+        if (checkedId == R.id.chipAll || checkedId == View.NO_ID) return null;
+        if (checkedId == R.id.chipSingle) return "Single";
+        if (checkedId == R.id.chipDouble) return "Double";
+        if (checkedId == R.id.chipSuite) return "Suite";
+        if (checkedId == R.id.chipDeluxe) return "Deluxe";
+        if (checkedId == R.id.chipFamily) return "Family";
+        return null;
+    }
+
+    private String getSortByFromChip(int chipId) {
+        if (chipId == R.id.chipPriceAsc) return "price_asc";
+        if (chipId == R.id.chipPriceDesc) return "price_desc";
+        if (chipId == R.id.chipRating) return "rating";
+        return "price_asc";
+    }
+
+    private void updateResultsCount() {
+        String countText = roomList.size() == 1 ?
+            roomList.size() + " phòng được tìm thấy" :
+            roomList.size() + " phòng được tìm thấy";
+        tvResultsCount.setText(countText);
+    }
+
+    private void showProgressBar(boolean show) {
+        layoutProgress.setVisibility(show ? View.VISIBLE : View.GONE);
+        recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
+
+    private void showEmptyState(boolean show) {
+        layoutEmptyState.setVisibility(show ? View.VISIBLE : View.GONE);
+        recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     private void onRoomClick(Room room) {
@@ -217,6 +335,7 @@ public class RoomListActivity extends AppCompatActivity {
                 roomList.clear();
                 roomList.addAll(refreshedRooms);
                 adapter.notifyDataSetChanged();
+                updateResultsCount();
             });
         });
     }
