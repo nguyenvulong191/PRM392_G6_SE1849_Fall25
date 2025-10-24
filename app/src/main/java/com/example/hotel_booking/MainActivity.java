@@ -190,29 +190,29 @@ public class MainActivity extends AppCompatActivity {
         List<HotelCard> list = new ArrayList<>();
 
         // Hotel
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hotel • Sunrise Hotel", "10:00 - 23:00", "$55", 4.9f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hotel • Central Hotel", "00:00 - 24:00", "$50", 4.6f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hotel • Old Quarter Inn", "10:00 - 22:00", "$45", 4.6f));
+        list.add(new HotelCard(R.drawable.hotel_1, "Hotel • Sunrise Hotel", "10:00 - 23:00", "$55", 4.9f));
+        list.add(new HotelCard(R.drawable.hotel_2, "Hotel • Central Hotel", "00:00 - 24:00", "$50", 4.6f));
+        list.add(new HotelCard(R.drawable.hotel_3, "Hotel • Old Quarter Inn", "10:00 - 22:00", "$45", 4.6f));
 
         // Resort
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Resort • Bay View Resort", "00:00 - 24:00", "$80", 4.7f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Resort • Coral Reef Resort", "10:00 - 22:00", "$95", 4.6f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Resort • Mountain Sky Resort", "10:00 - 23:00", "$90", 4.5f));
+        list.add(new HotelCard(R.drawable.resort_1, "Resort • Bay View Resort", "00:00 - 24:00", "$80", 4.7f));
+        list.add(new HotelCard(R.drawable.resort_2, "Resort • Coral Reef Resort", "10:00 - 22:00", "$95", 4.6f));
+        list.add(new HotelCard(R.drawable.resort_3, "Resort • Mountain Sky Resort", "10:00 - 23:00", "$90", 4.5f));
 
         // Apartment
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Apartment • City Center Apartment", "09:00 - 21:00", "$60", 4.5f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Apartment • Riverside Apartment", "10:00 - 22:00", "$65", 4.4f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Apartment • Garden View Apartment", "10:00 - 22:00", "$62", 4.3f));
+        list.add(new HotelCard(R.drawable.apartment_1, "Apartment • City Center Apartment", "09:00 - 21:00", "$60", 4.5f));
+        list.add(new HotelCard(R.drawable.apartment_2, "Apartment • Riverside Apartment", "10:00 - 22:00", "$65", 4.4f));
+        list.add(new HotelCard(R.drawable.apartment_3, "Apartment • Garden View Apartment", "10:00 - 22:00", "$62", 4.3f));
 
         // Villa
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Villa • Sunrise Villa", "10:00 - 23:00", "$120", 4.8f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Villa • Palm Garden Villa", "10:00 - 23:00", "$130", 4.7f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Villa • Ocean Breeze Villa", "10:00 - 23:00", "$140", 4.8f));
+        list.add(new HotelCard(R.drawable.villa_1, "Villa • Sunrise Villa", "10:00 - 23:00", "$120", 4.8f));
+        list.add(new HotelCard(R.drawable.villa_2, "Villa • Palm Garden Villa", "10:00 - 23:00", "$130", 4.7f));
+        list.add(new HotelCard(R.drawable.villa_3, "Villa • Ocean Breeze Villa", "10:00 - 23:00", "$140", 4.8f));
 
         // Hostel
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hostel • Backpackers Hostel", "10:00 - 22:00", "$20", 4.3f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hostel • Old Quarter Hostel", "00:00 - 24:00", "$25", 4.2f));
-        list.add(new HotelCard(R.mipmap.ic_launcher, "Hostel • City Budget Hostel", "09:00 - 21:00", "$18", 4.1f));
+        list.add(new HotelCard(R.drawable.hostel_1, "Hostel • Backpackers Hostel", "10:00 - 22:00", "$20", 4.3f));
+        list.add(new HotelCard(R.drawable.hostel_2, "Hostel • Old Quarter Hostel", "00:00 - 24:00", "$25", 4.2f));
+        list.add(new HotelCard(R.drawable.hostel_3, "Hostel • City Budget Hostel", "09:00 - 21:00", "$18", 4.1f));
 
         return list;
     }
