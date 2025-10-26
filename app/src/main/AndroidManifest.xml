@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+ >
 
     <application
         android:allowBackup="true"
@@ -15,6 +15,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".RoomListActivity" />
+        <activity android:name=".BookingActivity" />
         <activity android:name=".RoomDetailActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity

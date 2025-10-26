@@ -182,6 +182,7 @@
         <!-- Book button -->
         <Button
             android:id="@+id/btnBook"
+            android:onClick="bookRoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Đặt phòng ngay"
