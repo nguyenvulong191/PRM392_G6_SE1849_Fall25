@@ -27,6 +27,7 @@ public class AppDatabase extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_BOOKING_TABLE = "CREATE TABLE " + TABLE_BOOKING + " ("
@@ -49,7 +50,7 @@ public class AppDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_ROOM, booking.getRoomType());
         values.put(COLUMN_GUEST, booking.getGuestName());
-        values.put(COLUMN_DATE, booking.getBookingDate());
+        values.put(COLUMN_DATE, booking.getCheckInDate() + " - " + booking.getCheckOutDate());
         values.put(COLUMN_PRICE, booking.getTotalPrice());
         db.insert(TABLE_BOOKING, null, values);
         db.close();
@@ -66,7 +67,18 @@ public class AppDatabase extends SQLiteOpenHelper {
                 booking.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
                 booking.setRoomType(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ROOM)));
                 booking.setGuestName(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GUEST)));
-                booking.setBookingDate(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE)));
+
+                // 🧩 Phân tách chuỗi "checkIn - checkOut" thành 2 phần riêng biệt
+                String dateRange = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                if (dateRange != null && dateRange.contains(" - ")) {
+                    String[] parts = dateRange.split(" - ");
+                    booking.setCheckInDate(parts[0]);
+                    booking.setCheckOutDate(parts.length > 1 ? parts[1] : "");
+                } else {
+                    booking.setCheckInDate(dateRange);
+                    booking.setCheckOutDate("");
+                }
+
                 booking.setTotalPrice(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRICE)));
                 list.add(booking);
             } while (cursor.moveToNext());
@@ -82,4 +94,5 @@ public class AppDatabase extends SQLiteOpenHelper {
         db.delete(TABLE_BOOKING, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
         db.close();
     }
+
 }
