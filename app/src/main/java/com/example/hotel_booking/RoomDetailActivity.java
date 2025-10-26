@@ -1,6 +1,8 @@
 package com.example.hotel_booking;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.hotel_booking.adapter.GalleryAdapter;
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.RoomRepository;
@@ -61,7 +62,6 @@ public class RoomDetailActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         btnBack.setOnClickListener(v -> finish());
-        btnBook.setOnClickListener(v -> bookRoom());
     }
 
     private void loadRoomDetail(int roomId) {
@@ -142,10 +142,13 @@ public class RoomDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void bookRoom() {
-        // Simple booking confirmation
-        Toast.makeText(this,
-            "Đặt phòng " + currentRoom.getName() + " thành công!\nGiá: $" + (int)currentRoom.getPrice() + "/đêm",
-            Toast.LENGTH_LONG).show();
+    public void bookRoom(View view) {
+        Intent intent = new Intent(RoomDetailActivity.this, BookingActivity.class);
+        intent.putExtra("room_id", currentRoom.getId());
+        intent.putExtra("room_name", currentRoom.getName());
+        intent.putExtra("room_price", currentRoom.getPrice());
+        intent.putExtra("room_type", currentRoom.getRoomType());
+        intent.putExtra("room_capacity", currentRoom.getCapacity());
+        startActivity(intent);
     }
 }
