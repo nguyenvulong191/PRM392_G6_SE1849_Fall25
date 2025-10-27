@@ -123,9 +123,11 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView rvHotels = findViewById(R.id.rvHotels);
         rvHotels.setLayoutManager(new LinearLayoutManager(this));
-        hotelAdp = new HotelCardAdapter(this, new ArrayList<>(), card ->
-                startActivity(new Intent(this, RoomListActivity.class))
-        );
+        hotelAdp = new HotelCardAdapter(this, new ArrayList<>(), card -> {
+            Intent intent = new Intent(this, RoomDetailActivity.class);
+            intent.putExtra("room_id", card.roomId);
+            startActivity(intent);
+        });
         rvHotels.setAdapter(hotelAdp);
 
         roomRepository = new RoomRepository(this);
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (imgRes == 0) imgRes = R.mipmap.ic_launcher_round;
 
-                cards.add(new HotelCard(imgRes, title, hours, price, rating));
+                cards.add(new HotelCard(r.getId(), imgRes, title, hours, price, rating));
             }
 
             List<HotelCard> filtered;
