@@ -17,6 +17,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
         UserRepository repo = new UserRepository(this);
 
         EditText etName = findViewById(R.id.etName);
@@ -49,19 +50,22 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
 
-            // chạy DB trên thread nền
             AppExecutors.io().execute(() -> {
                 if (repo.isEmailExists(email)) {
                     runOnUiThread(() -> etEmail.setError("Email đã tồn tại"));
                     return;
                 }
+
+                // TODO (tuỳ chọn): hash pass trước khi lưu
                 long rowId = repo.insertUser(name, email, pass);
+
                 runOnUiThread(() -> {
                     if (rowId > 0) {
-                        // Lưu phiên + tên
+
                         getSharedPreferences("hotel_auth", MODE_PRIVATE)
                                 .edit()
                                 .putBoolean("logged_in", true)
+                                .putInt("user_id", (int) rowId)
                                 .putString("email", email)
                                 .putString("full_name", name)
                                 .apply();
@@ -71,12 +75,12 @@ public class RegisterActivity extends AppCompatActivity {
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
                     } else {
-                        android.widget.Toast.makeText(this, "Lỗi khi đăng ký!", android.widget.Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Lỗi khi đăng ký!", Toast.LENGTH_SHORT).show();
                     }
                 });
             });
         });
 
-        tvToLogin.setOnClickListener(v -> finish()); // quay lại Login
+        tvToLogin.setOnClickListener(v -> finish());
     }
 }
