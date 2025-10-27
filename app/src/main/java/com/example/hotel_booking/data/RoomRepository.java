@@ -52,7 +52,7 @@ public class RoomRepository {
         // Sample data
         List<Room> sampleRooms = Arrays.asList(
             new Room("Deluxe Ocean View", "Phòng cao cấp view biển tuyệt đẹp", 150,
-                "room1.jpg", "Vũng Tàu", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
+                "room_1.jpg", "Vũng Tàu", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
                 5, "Deluxe", 2, "room1_1.jpg,room1_2.jpg,room1_3.jpg"),
 
             new Room("Standard Double Room", "Phòng đôi tiêu chuẩn thoải mái", 80,
@@ -76,7 +76,7 @@ public class RoomRepository {
                 5, "Suite", 6, "room6_1.jpg,room6_2.jpg,room6_3.jpg,room6_4.jpg"),
 
             new Room("Budget Single", "Phòng đơn giá rẻ", 35,
-                "room7.jpg", "Hà Nội", "WiFi miễn phí, Điều hòa",
+                "hostel_1.jpg", "Hà Nội", "WiFi miễn phí, Điều hòa",
                 2, "Single", 1, "room7_1.jpg,room7_2.jpg"),
 
             new Room("Garden View Double", "Phòng đôi view vườn", 90,
