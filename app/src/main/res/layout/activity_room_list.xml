@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="#111416">
 
-    <!-- App Bar with gradient background -->
+    <!-- App Bar with gradient background matching MainActivity -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_toolbar_gradient"
-        app:elevation="8dp">
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -26,6 +26,7 @@
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_arrow_back"
+                app:tint="@android:color/white"
                 android:contentDescription="Quay lại"
                 android:layout_marginEnd="8dp" />
 
@@ -58,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#1E252B"
                 app:strokeWidth="0dp">
 
                 <LinearLayout
@@ -78,6 +80,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_search"
+                            app:tint="@android:color/white"
                             android:layout_marginEnd="8dp"
                             android:contentDescription="Tìm kiếm" />
 
@@ -88,7 +91,7 @@
                             android:text="Tìm kiếm phòng lý tưởng"
                             android:textStyle="bold"
                             android:textSize="18sp"
-                            android:textColor="#2C3E50" />
+                            android:textColor="@android:color/white" />
 
                         <ImageButton
                             android:id="@+id/btnToggleFilter"
@@ -96,6 +99,7 @@
                             android:layout_height="32dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:src="@drawable/ic_expand_more"
+                            android:tint="@android:color/white"
                             android:contentDescription="Mở rộng bộ lọc" />
 
                     </LinearLayout>
@@ -110,13 +114,18 @@
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusBottomEnd="12dp"
-                        app:startIconDrawable="@drawable/ic_location">
+                        app:boxStrokeColor="@color/brand_end"
+                        app:hintTextColor="#B3FFFFFF"
+                        app:startIconDrawable="@drawable/ic_location"
+                        app:startIconTint="@color/brand_end">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etLocation"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Tìm theo địa điểm..."
+                            android:textColor="@android:color/white"
+                            android:textColorHint="#B3FFFFFF"
                             android:inputType="text"
                             android:imeOptions="actionSearch" />
 
@@ -137,7 +146,7 @@
                             android:text="Khoảng giá"
                             android:textStyle="bold"
                             android:textSize="14sp"
-                            android:textColor="#34495E"
+                            android:textColor="@android:color/white"
                             android:layout_marginBottom="8dp"
                             android:layout_marginTop="8dp" />
 
@@ -156,13 +165,17 @@
                                 app:boxCornerRadiusTopStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
                                 app:boxCornerRadiusBottomStart="8dp"
-                                app:boxCornerRadiusBottomEnd="8dp">
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxStrokeColor="@color/brand_end"
+                                app:hintTextColor="#B3FFFFFF">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etMinPrice"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="Giá từ"
+                                    android:textColor="@android:color/white"
+                                    android:textColorHint="#B3FFFFFF"
                                     android:inputType="numberDecimal" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -171,6 +184,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="—"
+                                android:textColor="#B3FFFFFF"
                                 android:layout_gravity="center"
                                 android:layout_marginHorizontal="8dp"
                                 android:textSize="16sp" />
@@ -184,13 +198,17 @@
                                 app:boxCornerRadiusTopStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
                                 app:boxCornerRadiusBottomStart="8dp"
-                                app:boxCornerRadiusBottomEnd="8dp">
+                                app:boxCornerRadiusBottomEnd="8dp"
+                                app:boxStrokeColor="@color/brand_end"
+                                app:hintTextColor="#B3FFFFFF">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etMaxPrice"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="Đến"
+                                    android:textColor="@android:color/white"
+                                    android:textColorHint="#B3FFFFFF"
                                     android:inputType="numberDecimal" />
 
                             </com.google.android.material.textfield.TextInputLayout>
@@ -204,7 +222,7 @@
                             android:text="Loại phòng"
                             android:textStyle="bold"
                             android:textSize="14sp"
-                            android:textColor="#34495E"
+                            android:textColor="@android:color/white"
                             android:layout_marginBottom="8dp" />
 
                         <com.google.android.material.chip.ChipGroup
@@ -267,7 +285,7 @@
                             android:text="Sắp xếp theo"
                             android:textStyle="bold"
                             android:textSize="14sp"
-                            android:textColor="#34495E"
+                            android:textColor="@android:color/white"
                             android:layout_marginBottom="8dp" />
 
                         <com.google.android.material.chip.ChipGroup
@@ -318,6 +336,8 @@
                             android:layout_marginEnd="8dp"
                             android:layout_weight="1"
                             android:text="Xóa bộ lọc"
+                            android:textColor="@android:color/white"
+                            app:strokeColor="@android:color/white"
                             app:cornerRadius="12dp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -327,6 +347,8 @@
                             android:layout_weight="1"
                             android:layout_marginStart="8dp"
                             android:text="Tìm kiếm"
+                            android:textColor="@android:color/white"
+                            app:backgroundTint="@color/brand_end"
                             app:cornerRadius="12dp"
                             app:icon="@drawable/ic_search" />
 
@@ -353,7 +375,7 @@
                     android:text="Đang tải phòng..."
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#2C3E50" />
+                    android:textColor="@android:color/white" />
 
                 <ImageButton
                     android:id="@+id/btnGridToggle"
@@ -361,6 +383,7 @@
                     android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_view_list"
+                    android:tint="@android:color/white"
                     android:contentDescription="Thay đổi chế độ xem" />
 
             </LinearLayout>
@@ -379,13 +402,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
-                    app:indicatorColor="#3498DB" />
+                    app:indicatorColor="@color/brand_end" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Đang tải danh sách phòng..."
-                    android:textColor="#7F8C8D"
+                    android:textColor="#B3FFFFFF"
                     android:layout_marginTop="16dp" />
 
             </LinearLayout>
@@ -414,7 +437,8 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@drawable/ic_empty_search"
-                    android:alpha="0.5"
+                    android:alpha="0.3"
+                    android:tint="#B3FFFFFF"
                     android:contentDescription="Không tìm thấy kết quả" />
 
                 <TextView
@@ -423,7 +447,7 @@
                     android:text="Không tìm thấy phòng nào"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#2C3E50"
+                    android:textColor="@android:color/white"
                     android:layout_marginTop="16dp" />
 
                 <TextView
@@ -431,7 +455,7 @@
                     android:layout_height="wrap_content"
                     android:text="Hãy thử điều chỉnh bộ lọc tìm kiếm của bạn"
                     android:textSize="14sp"
-                    android:textColor="#7F8C8D"
+                    android:textColor="#B3FFFFFF"
                     android:textAlignment="center"
                     android:layout_marginTop="8dp" />
 
@@ -441,7 +465,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Xóa bộ lọc"
+                    android:textColor="@android:color/white"
                     android:layout_marginTop="16dp"
+                    app:strokeColor="@android:color/white"
                     app:cornerRadius="12dp" />
 
             </LinearLayout>
@@ -459,9 +485,12 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:text="Tải thêm phòng"
+                    android:textColor="@android:color/white"
                     android:visibility="gone"
+                    app:strokeColor="@color/brand_end"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/ic_expand_more" />
+                    app:icon="@drawable/ic_expand_more"
+                    app:iconTint="@android:color/white" />
 
             </LinearLayout>
 
@@ -478,6 +507,7 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_filter"
         android:contentDescription="Bộ lọc nhanh"
+        app:backgroundTint="@color/brand_end"
         app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
