@@ -113,7 +113,18 @@
                 app:rippleColor="#33FFFFFF"
                 app:strokeColor="@android:color/white"
                 app:strokeWidth="2dp" />
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBookingHistory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="🕓 Lịch sử đặt phòng"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/brand_start"
+                app:cornerRadius="28dp"
+                app:rippleColor="#33FFFFFF" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView

@@ -16,6 +16,7 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".RoomListActivity" />
         <activity android:name=".BookingActivity" />
+        <activity android:name=".BookingHistoryActivity" />
         <activity android:name=".RoomDetailActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity
