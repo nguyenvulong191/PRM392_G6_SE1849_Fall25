@@ -80,6 +80,24 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.ViewHolder> {
             tvRating.setText(String.format("⭐ %d/5", room.getRating()));
             tvRoomType.setText(room.getRoomType());
 
+            // Load room image from drawable resources
+            String imageUrl = room.getImageUrl();
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                // Remove file extension if present
+                String imageName = imageUrl.trim().replace(".jpg", "").replace(".png", "");
+                int resourceId = itemView.getContext().getResources()
+                    .getIdentifier(imageName, "drawable", itemView.getContext().getPackageName());
+
+                if (resourceId != 0) {
+                    ivRoom.setImageResource(resourceId);
+                } else {
+                    // Fallback to placeholder if resource not found
+                    ivRoom.setImageResource(R.drawable.bg_welcome);
+                }
+            } else {
+                ivRoom.setImageResource(R.drawable.bg_welcome);
+            }
+
             // Set favorite icon
             ivFavorite.setImageResource(room.isFavorite() ?
                 android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off);
