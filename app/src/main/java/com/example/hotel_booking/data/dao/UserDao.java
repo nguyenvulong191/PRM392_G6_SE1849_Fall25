@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.hotel_booking.data.entity.User;
 
@@ -21,6 +22,13 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     User getById(int id);
+
     @Query("SELECT name FROM users WHERE email = :email LIMIT 1")
     String getNameByEmail(String email);
+
+    @Update
+    void update(User user);
+
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    User getUserByEmail(String email);
 }
