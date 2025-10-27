@@ -19,6 +19,8 @@
         <activity android:name=".BookingHistoryActivity" />
         <activity android:name=".RoomDetailActivity" />
         <activity android:name=".FavoritesActivity" />
+        <activity android:name=".ProfileActivity"/>
+
         <activity
             android:name=".WelcomeActivity"
             android:exported="true">

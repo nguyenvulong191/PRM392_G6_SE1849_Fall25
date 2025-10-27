@@ -30,6 +30,7 @@ import com.example.hotel_booking.ui.CategoryAdapter;
 import com.example.hotel_booking.ui.HotelCardAdapter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.example.hotel_booking.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_home) {
                 item.setChecked(true);
             } else if (id == R.id.nav_user) {
-                Toast.makeText(this, "Daily Meal", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfileActivity.class)); // Mở ProfileActivity
             } else if (id == R.id.nav_fav) {
                 startActivity(new Intent(this, FavoritesActivity.class));
             } else if (id == R.id.nav_cart) {
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
             return true;
         });
+
 
         String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
         TextView tvHello = findViewById(R.id.tvHello);
