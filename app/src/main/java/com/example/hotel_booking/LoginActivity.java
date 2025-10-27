@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.UserRepository;
+import com.example.hotel_booking.data.entity.User;
 
 public class LoginActivity extends AppCompatActivity {
     @Override
@@ -24,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
         TextView tvToRegister = findViewById(R.id.tvToRegister);
         Button btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+
         UserRepository repo = new UserRepository(this);
 
         btnLogin.setOnClickListener(v -> {
@@ -44,25 +46,24 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             AppExecutors.io().execute(() -> {
-                boolean ok = repo.checkLogin(email, pass);
+                User u = repo.loginAndGet(email, pass);
+
                 runOnUiThread(() -> {
-                    if (ok) {
-                        AppExecutors.io().execute(() -> {
-                            String fullName = repo.getNameByEmail(email); // lấy tên
-                            runOnUiThread(() -> {
-                                getSharedPreferences("hotel_auth", MODE_PRIVATE)
-                                        .edit()
-                                        .putBoolean("logged_in", true)
-                                        .putString("email", email)
-                                        .putString("full_name", fullName)
-                                        .apply();
-                                Intent i = new Intent(this, MainActivity.class);
-                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(i);
-                            });
-                        });
+                    if (u != null) {
+                        getSharedPreferences("hotel_auth", MODE_PRIVATE)
+                                .edit()
+                                .putBoolean("logged_in", true)
+                                .putInt("user_id", u.getId())     // QUAN TRỌNG
+                                .putString("email", email)
+                                .putString("full_name", u.getName())
+                                .apply();
+
+                        Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(this, MainActivity.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     } else {
-                        android.widget.Toast.makeText(this, "Sai email hoặc mật khẩu", android.widget.Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Sai email hoặc mật khẩu", Toast.LENGTH_SHORT).show();
                     }
                 });
             });

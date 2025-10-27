@@ -38,22 +38,14 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // RecyclerView and CardView
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.cardview:cardview:1.0.0")
 
-    // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // ✅ Thêm Room Database
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation(libs.room.common.jvm)
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 
-    // Nếu bạn dùng LiveData hoặc coroutines (phần mở rộng Room KTX)
-    implementation("androidx.room:room-ktx:2.6.1")
-
-    // Unit test
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
