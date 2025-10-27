@@ -44,10 +44,12 @@ public class RoomRepository {
     }
 
     private void initializeSampleData() {
-        // Clear old data first
-        roomDao.clearAllRooms();
+        // Check if data already exists - DON'T clear existing data!
+        if (roomDao.getRoomCount() > 0) {
+            return; // Data exists, don't reinitialize
+        }
 
-        // Sample data with correct drawable resource names
+        // Only initialize sample data if database is empty
         List<Room> sampleRooms = Arrays.asList(
                 new Room("Deluxe Ocean View", "Phòng cao cấp view biển tuyệt đẹp", 150,
                         "hotel_1", "Vũng Tàu", "WiFi miễn phí, Điều hòa, Tivi, Minibar",

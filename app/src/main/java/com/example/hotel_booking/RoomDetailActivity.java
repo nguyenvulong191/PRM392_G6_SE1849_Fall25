@@ -130,13 +130,18 @@ public class RoomDetailActivity extends AppCompatActivity {
     }
 
     private void toggleFavorite() {
+        boolean newFavoriteStatus = !currentRoom.isFavorite();
         AppExecutors.io().execute(() -> {
-            roomRepository.updateFavoriteStatus(currentRoom.getId(), !currentRoom.isFavorite());
-            currentRoom.setFavorite(!currentRoom.isFavorite());
+            // Update DB first
+            roomRepository.updateFavoriteStatus(currentRoom.getId(), newFavoriteStatus);
+
+            // Then update local object
+            currentRoom.setFavorite(newFavoriteStatus);
+
             runOnUiThread(() -> {
                 updateFavoriteIcon();
                 Toast.makeText(this,
-                    currentRoom.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
+                    newFavoriteStatus ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
                     Toast.LENGTH_SHORT).show();
             });
         });
