@@ -2,11 +2,15 @@ package com.example.hotel_booking;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +18,7 @@ import com.example.hotel_booking.adapter.RoomAdapter;
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.RoomRepository;
 import com.example.hotel_booking.data.entity.Room;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +28,8 @@ public class FavoritesActivity extends AppCompatActivity {
     private RoomAdapter adapter;
     private RoomRepository roomRepository;
     private List<Room> favoriteRooms = new ArrayList<>();
-    private Button btnBack;
-    private TextView tvEmptyMessage;
+    private LinearLayout emptyLayout;
+    private MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +37,8 @@ public class FavoritesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorites);
 
         initViews();
+        setupToolbar();
         setupRecyclerView();
-        setupClickListeners();
 
         roomRepository = new RoomRepository(this);
         loadFavorites();
@@ -41,8 +46,28 @@ public class FavoritesActivity extends AppCompatActivity {
 
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
-        btnBack = findViewById(R.id.btnBack);
-        tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
+        emptyLayout = findViewById(R.id.emptyLayout);
+        toolbar = findViewById(R.id.topAppBar);
+    }
+
+    private void setupToolbar() {
+        // Apply window insets for status bar
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+            int minus = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 22, getResources().getDisplayMetrics());
+            int top = Math.max(0, bars.top - minus);
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), v.getPaddingBottom());
+            return insets;
+        });
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Phòng yêu thích");
+        }
+
+        toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void setupRecyclerView() {
@@ -51,9 +76,6 @@ public class FavoritesActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupClickListeners() {
-        btnBack.setOnClickListener(v -> finish());
-    }
 
     private void loadFavorites() {
         AppExecutors.io().execute(() -> {
@@ -65,10 +87,10 @@ public class FavoritesActivity extends AppCompatActivity {
 
                 // Show/hide empty message
                 if (favoriteRooms.isEmpty()) {
-                    tvEmptyMessage.setVisibility(View.VISIBLE);
+                    emptyLayout.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 } else {
-                    tvEmptyMessage.setVisibility(View.GONE);
+                    emptyLayout.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
                 }
             });
@@ -90,7 +112,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
                 // Update empty message visibility
                 if (favoriteRooms.isEmpty()) {
-                    tvEmptyMessage.setVisibility(View.VISIBLE);
+                    emptyLayout.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
                 }
             });

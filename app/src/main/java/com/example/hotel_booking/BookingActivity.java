@@ -1,6 +1,7 @@
 package com.example.hotel_booking;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,12 +16,18 @@ import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.database.AppDatabase;
 import com.example.hotel_booking.data.entity.Booking;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class BookingActivity extends AppCompatActivity {
 
-    private EditText etCheckIn, etCheckOut, etGuests;
-    private CheckBox cbBreakfast, cbPickup;
+    private EditText etCheckIn, etCheckOut;
+    private CheckBox cbBreakfast, cbPickup, cbSpa, cbDinner;
+    private EditText etNote;
     private TextView tvRoomInfo, tvReview;
     private Button btnConfirmBooking, btnBackHome;
 
@@ -42,9 +49,11 @@ public class BookingActivity extends AppCompatActivity {
     private void initViews() {
         etCheckIn = findViewById(R.id.etCheckIn);
         etCheckOut = findViewById(R.id.etCheckOut);
-        etGuests = findViewById(R.id.etGuests);
         cbBreakfast = findViewById(R.id.cbBreakfast);
         cbPickup = findViewById(R.id.cbPickup);
+        cbSpa = findViewById(R.id.cbSpa);
+        cbDinner = findViewById(R.id.cbDinner);
+        etNote = findViewById(R.id.etNote);
         tvRoomInfo = findViewById(R.id.tvRoomInfo);
         tvReview = findViewById(R.id.tvReview);
         btnConfirmBooking = findViewById(R.id.btnConfirmBooking);
@@ -65,7 +74,13 @@ public class BookingActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnConfirmBooking.setOnClickListener(v -> confirmBooking());
-        btnBackHome.setOnClickListener(v -> finish());
+        btnBackHome.setOnClickListener(v -> {
+            Intent intent = new Intent(BookingActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
     }
 
     private void setupDatePickers() {
@@ -89,6 +104,7 @@ public class BookingActivity extends AppCompatActivity {
                 year, month, day
         );
 
+        // Không cho chọn ngày trong quá khứ
         datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
     }
@@ -96,10 +112,7 @@ public class BookingActivity extends AppCompatActivity {
     private void confirmBooking() {
         String checkIn = etCheckIn.getText().toString().trim();
         String checkOut = etCheckOut.getText().toString().trim();
-        String guestsStr = etGuests.getText().toString().trim();
-        int guests = guestsStr.isEmpty() ? 1 : Integer.parseInt(guestsStr);
 
-        // Validate tối thiểu
         if (checkIn.isEmpty()) {
             etCheckIn.setError("Chọn ngày nhận phòng");
             return;
@@ -109,7 +122,22 @@ public class BookingActivity extends AppCompatActivity {
             return;
         }
 
-        double totalPrice = roomPrice;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        long diffDays = 1;
+        try {
+            Date inDate = sdf.parse(checkIn);
+            Date outDate = sdf.parse(checkOut);
+            if (inDate != null && outDate != null && !outDate.before(inDate)) {
+                long diff = outDate.getTime() - inDate.getTime();
+                diffDays = Math.max(1, TimeUnit.MILLISECONDS.toDays(diff));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String noteText = etNote.getText().toString().trim();
+
+        double totalPrice = roomPrice * diffDays;
         StringBuilder addons = new StringBuilder();
 
         if (cbBreakfast.isChecked()) {
@@ -120,11 +148,21 @@ public class BookingActivity extends AppCompatActivity {
             totalPrice += 20;
             addons.append("- Đưa đón sân bay\n");
         }
+        if (cbSpa.isChecked()) {
+            totalPrice += 30;
+            addons.append("- Dịch vụ spa\n");
+        }
+        if (cbDinner.isChecked()) {
+            totalPrice += 25;
+            addons.append("- Bữa tối sang trọng\n");
+        }
+
 
         String reviewText = String.format(
-                "✅ Đặt phòng thành công!\n\nPhòng: %s\nLoại: %s\nNgày: %s → %s\nSố khách: %d\nDịch vụ thêm:\n%sTổng giá: $%.2f",
-                roomName, roomType, checkIn, checkOut, guests,
+                "✅ Đặt phòng thành công!\n\nPhòng: %s\nLoại: %s\nNgày: %s → %s\nDịch vụ thêm:\n%s📝 Ghi chú: %s\nTổng giá: $%.2f",
+                roomName, roomType, checkIn, checkOut,
                 addons.length() == 0 ? "(Không chọn)\n" : addons.toString(),
+                noteText.isEmpty() ? "(Không có ghi chú)" : noteText,
                 totalPrice
         );
 
@@ -133,9 +171,10 @@ public class BookingActivity extends AppCompatActivity {
         btnBackHome.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Đặt phòng thành công!", Toast.LENGTH_SHORT).show();
 
+        // Lưu booking vào database
         int uid = getSharedPreferences("hotel_auth", MODE_PRIVATE).getInt("user_id", 0);
         String guestDisplayName = getSharedPreferences("hotel_auth", MODE_PRIVATE)
-                .getString("full_name", roomName);
+                .getString("full_name", "Khách");
 
         Booking b = new Booking();
         b.setRoomType(roomType);
@@ -143,10 +182,13 @@ public class BookingActivity extends AppCompatActivity {
         b.setCheckInDate(checkIn);
         b.setCheckOutDate(checkOut);
         b.setTotalPrice(totalPrice);
-        b.setUserId(uid);
-
+        b.setUserId(uid > 0 ? uid : 1); // đảm bảo luôn có user id
+        b.setAddons(addons.length() == 0 ? "(Không chọn)" : addons.toString());
+        b.setNote(noteText.isEmpty() ? "(Không có ghi chú)" : noteText);
         AppExecutors.io().execute(() ->
-                AppDatabase.getInstance(getApplicationContext()).insertBooking(b)
+                AppDatabase.getInstance(getApplicationContext())
+                        .insertBooking(b)
         );
     }
+
 }

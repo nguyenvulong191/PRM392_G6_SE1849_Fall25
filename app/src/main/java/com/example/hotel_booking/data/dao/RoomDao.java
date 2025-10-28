@@ -163,6 +163,12 @@ public class RoomDao {
         return count;
     }
 
+    public void clearAllRooms() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(RoomDbHelper.TABLE_ROOMS, null, null);
+        db.close();
+    }
+
     private String getOrderByClause(String sortBy) {
         switch (sortBy) {
             case "price_asc":

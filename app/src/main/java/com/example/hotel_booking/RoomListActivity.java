@@ -2,6 +2,7 @@ package com.example.hotel_booking;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -10,6 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,6 +56,23 @@ public class RoomListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
+
+        // Handle window insets for status bar
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.appBarLayout), (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+            int minus = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 22, getResources().getDisplayMetrics());
+            int top = Math.max(0, bars.top - minus);
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), v.getPaddingBottom());
+            return insets;
+        });
+
+        // Setup toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         initViews();
         setupRecyclerView();

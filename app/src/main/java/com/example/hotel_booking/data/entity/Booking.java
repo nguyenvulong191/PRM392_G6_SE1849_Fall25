@@ -17,24 +17,25 @@ public class Booking {
     @ColumnInfo(name = "guest")
     private String guestName;
 
-    // DB lưu 1 cột date dạng "dd/MM/yyyy - dd/MM/yyyy"
     @ColumnInfo(name = "date")
     private String date;
 
     @ColumnInfo(name = "price")
     private double totalPrice;
 
-    // Cột mới để biết booking thuộc user nào
     @ColumnInfo(name = "userId")
     private int userId;
 
-    // ---- Fields chỉ dùng cho UI, không lưu DB ----
+    @ColumnInfo(name = "addons")
+    private String addons; // 🆕 dịch vụ thêm (ví dụ: Bữa sáng, Đưa đón sân bay)
+    @ColumnInfo(name = "note")
+    private String note;
     @Ignore private String checkInDate;
     @Ignore private String checkOutDate;
 
     public Booking() {}
 
-    // ===== Getters / Setters =====
+    // ==== Getters / Setters ====
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -44,17 +45,9 @@ public class Booking {
     public String getGuestName() { return guestName; }
     public void setGuestName(String guestName) { this.guestName = guestName; }
 
-    public double getTotalPrice() { return totalPrice; }
-    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
-
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
-
-    // ---- date (DB) và 2 field tiện UI ----
     public String getDate() { return date; }
     public void setDate(String date) {
         this.date = date;
-        // parse ra 2 biến UI
         if (date != null && date.contains(" - ")) {
             String[] parts = date.split(" - ");
             this.checkInDate  = parts[0];
@@ -65,6 +58,16 @@ public class Booking {
         }
     }
 
+    public double getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(double totalPrice) { this.totalPrice = totalPrice; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public String getAddons() { return addons; }
+    public void setAddons(String addons) { this.addons = addons; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
     public String getCheckInDate() { return checkInDate; }
     public void setCheckInDate(String checkInDate) {
         this.checkInDate = checkInDate;
@@ -76,6 +79,7 @@ public class Booking {
         this.checkOutDate = checkOutDate;
         rebuildDate();
     }
+
 
     private void rebuildDate() {
         if (checkInDate == null && checkOutDate == null) return;

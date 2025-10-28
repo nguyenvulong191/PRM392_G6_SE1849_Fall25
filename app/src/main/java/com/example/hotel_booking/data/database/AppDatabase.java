@@ -18,7 +18,7 @@ import java.util.List;
 
 @Database(
         entities = {Booking.class, User.class},
-        version = 2,
+        version = 4,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -53,16 +53,15 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "hotel_booking.db"
                             )
-                            .addMigrations(MIGRATION_1_2)
+                            .fallbackToDestructiveMigration() // 🔥 thêm dòng này
                             .build();
                 }
             }
         }
         return INSTANCE;
     }
-
     public void insertBooking(Booking booking) {
-        // đảm bảo cột 'date' (DB) có giá trị "checkIn - checkOut" như schema cũ
+        // Nếu cột date trống → tự tạo từ check-in / check-out
         if (booking.getDate() == null || booking.getDate().isEmpty()) {
             String in = booking.getCheckInDate() == null ? "" : booking.getCheckInDate();
             String out = booking.getCheckOutDate() == null ? "" : booking.getCheckOutDate();
@@ -71,11 +70,4 @@ public abstract class AppDatabase extends RoomDatabase {
         bookingDao().insert(booking);
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingDao().getAll();
-    }
-
-    public void deleteBooking(int id) {
-        bookingDao().deleteById(id);
-    }
 }

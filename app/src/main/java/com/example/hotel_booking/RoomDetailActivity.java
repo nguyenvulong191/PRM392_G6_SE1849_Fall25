@@ -2,19 +2,23 @@ package com.example.hotel_booking;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.hotel_booking.adapter.GalleryAdapter;
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.RoomRepository;
 import com.example.hotel_booking.data.entity.Room;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +27,7 @@ public class RoomDetailActivity extends AppCompatActivity {
     private TextView tvName, tvDescription, tvPrice, tvLocation, tvRating, tvAmenities, tvCapacity, tvRoomType;
     private ImageView ivFavorite;
     private RecyclerView recyclerGallery;
-    private Button btnBack, btnBook;
+    private MaterialToolbar toolbar;
     private RoomRepository roomRepository;
     private Room currentRoom;
 
@@ -33,7 +37,7 @@ public class RoomDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room_detail);
 
         initViews();
-        setupClickListeners();
+        setupToolbar();
         roomRepository = new RoomRepository(this);
 
         int roomId = getIntent().getIntExtra("room_id", -1);
@@ -46,6 +50,7 @@ public class RoomDetailActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        toolbar = findViewById(R.id.topAppBar);
         tvName = findViewById(R.id.tvName);
         tvDescription = findViewById(R.id.tvDescription);
         tvPrice = findViewById(R.id.tvPrice);
@@ -56,12 +61,26 @@ public class RoomDetailActivity extends AppCompatActivity {
         tvRoomType = findViewById(R.id.tvRoomType);
         ivFavorite = findViewById(R.id.ivFavorite);
         recyclerGallery = findViewById(R.id.recyclerGallery);
-        btnBack = findViewById(R.id.btnBack);
-        btnBook = findViewById(R.id.btnBook);
     }
 
-    private void setupClickListeners() {
-        btnBack.setOnClickListener(v -> finish());
+    private void setupToolbar() {
+        // Apply window insets for status bar
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
+            Insets bars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+            int minus = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 22, getResources().getDisplayMetrics());
+            int top = Math.max(0, bars.top - minus);
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), v.getPaddingBottom());
+            return insets;
+        });
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Chi tiết phòng");
+        }
+
+        toolbar.setNavigationOnClickListener(v -> finish());
     }
 
     private void loadRoomDetail(int roomId) {
@@ -130,13 +149,18 @@ public class RoomDetailActivity extends AppCompatActivity {
     }
 
     private void toggleFavorite() {
+        boolean newFavoriteStatus = !currentRoom.isFavorite();
         AppExecutors.io().execute(() -> {
-            roomRepository.updateFavoriteStatus(currentRoom.getId(), !currentRoom.isFavorite());
-            currentRoom.setFavorite(!currentRoom.isFavorite());
+            // Update DB first
+            roomRepository.updateFavoriteStatus(currentRoom.getId(), newFavoriteStatus);
+
+            // Then update local object
+            currentRoom.setFavorite(newFavoriteStatus);
+
             runOnUiThread(() -> {
                 updateFavoriteIcon();
                 Toast.makeText(this,
-                    currentRoom.isFavorite() ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
+                    newFavoriteStatus ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích",
                     Toast.LENGTH_SHORT).show();
             });
         });

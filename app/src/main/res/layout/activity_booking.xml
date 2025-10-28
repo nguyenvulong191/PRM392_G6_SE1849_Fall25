@@ -94,23 +94,7 @@
         </LinearLayout>
 
         <!-- Guests -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="👥 Số lượng khách"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
 
-        <EditText
-            android:id="@+id/etGuests"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nhập số khách"
-            android:inputType="number"
-            android:background="@drawable/input_bg"
-            android:padding="10dp"
-            android:layout_marginBottom="16dp" />
 
         <!-- Add-ons -->
         <TextView
@@ -140,7 +124,40 @@
                 android:layout_height="wrap_content"
                 android:text="🚗 Đưa đón sân bay (+$20)"
                 android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/cbSpa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="💆‍♀️ Dịch vụ spa (+$30)"
+                android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/cbDinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🍽️ Bữa tối sang trọng (+$25)"
+                android:textSize="16sp" />
         </LinearLayout>
+
+        <!-- Note -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📝 Ghi chú thêm"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ví dụ: check-in sớm, thêm gối, dị ứng hải sản..."
+            android:background="@drawable/input_bg"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp" />
+
 
         <!-- Confirm button -->
         <Button

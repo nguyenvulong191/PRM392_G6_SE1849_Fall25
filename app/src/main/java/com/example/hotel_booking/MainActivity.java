@@ -22,12 +22,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hotel_booking.common.AppExecutors;
+import com.example.hotel_booking.data.RoomRepository;
 import com.example.hotel_booking.model.Category;
 import com.example.hotel_booking.model.HotelCard;
 import com.example.hotel_booking.ui.CategoryAdapter;
 import com.example.hotel_booking.ui.HotelCardAdapter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
+import com.example.hotel_booking.ProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,16 +38,15 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    // giữ sẵn dữ liệu tổng để lọc nhanh
-    private List<HotelCard> allCards;
+    private List<HotelCard> allCards = new ArrayList<>();
     private HotelCardAdapter hotelAdp;
+    private RoomRepository roomRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Edge-to-edge: đẩy toolbar xuống dưới status bar
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.topAppBar), (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
             int minus = (int) TypedValue.applyDimension(
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // ---- Toolbar + Drawer ----
         MaterialToolbar toolbar = findViewById(R.id.topAppBar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Home");
@@ -70,22 +71,17 @@ public class MainActivity extends AppCompatActivity {
         toggle.syncState();
         if (getSupportActionBar() != null) getSupportActionBar().setTitle("Home");
         toggle.getDrawerArrowDrawable().setColor(android.graphics.Color.WHITE);
-        if (toolbar.getOverflowIcon() != null) {
+        if (toolbar.getOverflowIcon() != null)
             toolbar.getOverflowIcon().setTint(android.graphics.Color.WHITE);
-        }
-        if (toolbar.getNavigationIcon() != null) {
+        if (toolbar.getNavigationIcon() != null)
             DrawableCompat.setTint(toolbar.getNavigationIcon(), android.graphics.Color.WHITE);
-        }
 
-        // Header: tên + email
         View header = navView.getHeaderView(0);
         TextView tvHeaderName = header.findViewById(R.id.tvHeaderName);
         TextView tvHeaderEmail = header.findViewById(R.id.tvHeaderEmail);
 
-        String name = getSharedPreferences("hotel_auth", MODE_PRIVATE)
-                .getString("full_name", "Guest");
-        String email = getSharedPreferences("hotel_auth", MODE_PRIVATE)
-                .getString("email", "guest@example.com");
+        String name = getSharedPreferences("hotel_auth", MODE_PRIVATE).getString("full_name", "Guest");
+        String email = getSharedPreferences("hotel_auth", MODE_PRIVATE).getString("email", "guest@example.com");
         tvHeaderName.setText(name);
         tvHeaderEmail.setText(email);
 
@@ -94,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_home) {
                 item.setChecked(true);
             } else if (id == R.id.nav_user) {
-                Toast.makeText(this, "Daily Meal", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfileActivity.class)); // Mở ProfileActivity
             } else if (id == R.id.nav_fav) {
                 startActivity(new Intent(this, FavoritesActivity.class));
             } else if (id == R.id.nav_cart) {
@@ -109,42 +105,44 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Hello + first name
+
         String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
         TextView tvHello = findViewById(R.id.tvHello);
         tvHello.setText("Hello " + first);
 
-        // Buttons
         Button btnRooms = findViewById(R.id.btnRooms);
         Button btnFavorites = findViewById(R.id.btnFavorites);
         btnRooms.setOnClickListener(v -> startActivity(new Intent(this, RoomListActivity.class)));
         btnFavorites.setOnClickListener(v -> startActivity(new Intent(this, FavoritesActivity.class)));
-
-        // ==== Categories (chips tròn): Hotel/Resort/Apartment/Villa/Hostel ====
+        Button btnBookingHistory = findViewById(R.id.btnBookingHistory);
+        btnBookingHistory.setOnClickListener(v ->
+                startActivity(new Intent(this, BookingHistoryActivity.class))
+        );
         RecyclerView rvCat = findViewById(R.id.rvCategories);
         rvCat.setLayoutManager(new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
         CategoryAdapter catAdp = new CategoryAdapter(this, demoCategories());
         rvCat.setAdapter(catAdp);
 
-        // ==== Hotels list (danh sách dưới): lọc theo loại ====
         RecyclerView rvHotels = findViewById(R.id.rvHotels);
         rvHotels.setLayoutManager(new LinearLayoutManager(this));
-
-        allCards = buildAllCards(); // 5 loại, mỗi loại 3 item
-        hotelAdp = new HotelCardAdapter(this, filterByType(allCards, "Hotel"), card ->
-                startActivity(new Intent(this, RoomListActivity.class))
-        );
+        hotelAdp = new HotelCardAdapter(this, new ArrayList<>(), card -> {
+            Intent intent = new Intent(this, RoomDetailActivity.class);
+            intent.putExtra("room_id", card.roomId);
+            startActivity(intent);
+        });
         rvHotels.setAdapter(hotelAdp);
 
-        // click chip -> lọc
+        roomRepository = new RoomRepository(this);
+
+        loadCardsFromDbAndShow("Single");
+
         catAdp.setOnCategoryClickListener((catName, pos) -> {
-            String type = normalizeType(catName); // "Hotels" -> "Hotel", ...
-            hotelAdp.submit(filterByType(allCards, type));
+            loadCardsFromDbAndShow(catName);
         });
 
-        // Back: đóng drawer trước, rồi back mặc định
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override public void handleOnBackPressed() {
+            @Override
+            public void handleOnBackPressed() {
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     drawer.closeDrawer(GravityCompat.START);
                 } else {
@@ -154,13 +152,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    // ==== MENU (Toolbar) ====
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -173,71 +170,75 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    // ==== DATA: Categories ====
     private List<Category> demoCategories() {
         List<Category> list = new ArrayList<>();
-        list.add(new Category("Hotels",     R.mipmap.ic_launcher_round));
-        list.add(new Category("Resorts",    R.mipmap.ic_launcher_round));
-        list.add(new Category("Apartments", R.mipmap.ic_launcher_round));
-        list.add(new Category("Villas",     R.mipmap.ic_launcher_round));
-        list.add(new Category("Hostels",    R.mipmap.ic_launcher_round));
+        list.add(new Category("Single",  R.mipmap.ic_launcher_round));
+        list.add(new Category("Double",  R.mipmap.ic_launcher_round));
+        list.add(new Category("Suite",   R.mipmap.ic_launcher_round));
+        list.add(new Category("Deluxe",  R.mipmap.ic_launcher_round));
+        list.add(new Category("Family",  R.mipmap.ic_launcher_round));
         return list;
     }
+    private void loadCardsFromDbAndShow(String typeToShow) {
+        AppExecutors.io().execute(() -> {
+            List<com.example.hotel_booking.data.entity.Room> rooms =
+                    roomRepository.getRoomsPaginated("price_asc", 100, 0);
 
-    // ==== DATA: All cards (mỗi type 3 item) ====
-    private List<HotelCard> buildAllCards() {
-        List<HotelCard> list = new ArrayList<>();
+            List<HotelCard> cards = new ArrayList<>();
+            for (com.example.hotel_booking.data.entity.Room r : rooms) {
+                String title = r.getRoomType() + " • " + r.getName();
+                String hours = "00:00 - 24:00";
+                String price = "$" + (int) r.getPrice();
+                float rating  = (float) r.getRating();
 
-        // Hotel
-        list.add(new HotelCard(R.drawable.hotel_1, "Hotel • Sunrise Hotel", "10:00 - 23:00", "$55", 4.9f));
-        list.add(new HotelCard(R.drawable.hotel_2, "Hotel • Central Hotel", "00:00 - 24:00", "$50", 4.6f));
-        list.add(new HotelCard(R.drawable.hotel_3, "Hotel • Old Quarter Inn", "10:00 - 22:00", "$45", 4.6f));
+                int imgRes = 0;
+                String imageKey = r.getImageUrl();
+                if (imageKey != null && !imageKey.isEmpty()) {
+                    imgRes = getResources().getIdentifier(imageKey, "drawable", getPackageName());
+                }
+                if (imgRes == 0) imgRes = R.mipmap.ic_launcher_round;
 
-        // Resort
-        list.add(new HotelCard(R.drawable.resort_1, "Resort • Bay View Resort", "00:00 - 24:00", "$80", 4.7f));
-        list.add(new HotelCard(R.drawable.resort_2, "Resort • Coral Reef Resort", "10:00 - 22:00", "$95", 4.6f));
-        list.add(new HotelCard(R.drawable.resort_3, "Resort • Mountain Sky Resort", "10:00 - 23:00", "$90", 4.5f));
+                cards.add(new HotelCard(r.getId(), imgRes, title, hours, price, rating));
+            }
 
-        // Apartment
-        list.add(new HotelCard(R.drawable.apartment_1, "Apartment • City Center Apartment", "09:00 - 21:00", "$60", 4.5f));
-        list.add(new HotelCard(R.drawable.apartment_2, "Apartment • Riverside Apartment", "10:00 - 22:00", "$65", 4.4f));
-        list.add(new HotelCard(R.drawable.apartment_3, "Apartment • Garden View Apartment", "10:00 - 22:00", "$62", 4.3f));
+            List<HotelCard> filtered;
+            if (typeToShow == null || typeToShow.trim().isEmpty()) {
+                filtered = cards; // không lọc
+            } else {
+                String prefix = typeToShow + " • ";
+                filtered = new ArrayList<>();
+                for (HotelCard c : cards) {
+                    if (c.name != null && c.name.startsWith(prefix)) filtered.add(c);
+                }
+                if (filtered.isEmpty()) filtered = cards;
+            }
 
-        // Villa
-        list.add(new HotelCard(R.drawable.villa_1, "Villa • Sunrise Villa", "10:00 - 23:00", "$120", 4.8f));
-        list.add(new HotelCard(R.drawable.villa_2, "Villa • Palm Garden Villa", "10:00 - 23:00", "$130", 4.7f));
-        list.add(new HotelCard(R.drawable.villa_3, "Villa • Ocean Breeze Villa", "10:00 - 23:00", "$140", 4.8f));
-
-        // Hostel
-        list.add(new HotelCard(R.drawable.hostel_1, "Hostel • Backpackers Hostel", "10:00 - 22:00", "$20", 4.3f));
-        list.add(new HotelCard(R.drawable.hostel_2, "Hostel • Old Quarter Hostel", "00:00 - 24:00", "$25", 4.2f));
-        list.add(new HotelCard(R.drawable.hostel_3, "Hostel • City Budget Hostel", "09:00 - 21:00", "$18", 4.1f));
-
-        return list;
+            List<HotelCard> finalFiltered = filtered;
+            runOnUiThread(() -> {
+                allCards = cards;
+                hotelAdp.submit(finalFiltered);
+            });
+        });
     }
 
-    // Lọc theo type bằng prefix trong title (Hotel • ..., Resort • ...)
+
     private List<HotelCard> filterByType(List<HotelCard> all, String type) {
+        if (type == null || type.trim().isEmpty()) return all;
         List<HotelCard> out = new ArrayList<>();
         String prefix = String.format(Locale.getDefault(), "%s • ", type);
         for (HotelCard c : all) {
-            if (c.name != null && c.name.startsWith(prefix)) {
-                out.add(c);
-            }
+            if (c.name != null && c.name.startsWith(prefix)) out.add(c);
         }
         return out;
     }
-
-    // Chuẩn hóa tên category -> type đơn (Hotels -> Hotel, ...)
     private String normalizeType(String catName) {
         if (catName == null) return "Hotel";
         catName = catName.trim();
-        if (catName.equalsIgnoreCase("Hotels"))     return "Hotel";
-        if (catName.equalsIgnoreCase("Resorts"))    return "Resort";
+        if (catName.equalsIgnoreCase("Hotels")) return "Hotel";
+        if (catName.equalsIgnoreCase("Resorts")) return "Resort";
         if (catName.equalsIgnoreCase("Apartments")) return "Apartment";
-        if (catName.equalsIgnoreCase("Villas"))     return "Villa";
-        if (catName.equalsIgnoreCase("Hostels"))    return "Hostel";
-        return catName; // fallback
+        if (catName.equalsIgnoreCase("Villas")) return "Villa";
+        if (catName.equalsIgnoreCase("Hostels")) return "Hostel";
+        return catName;
     }
 }

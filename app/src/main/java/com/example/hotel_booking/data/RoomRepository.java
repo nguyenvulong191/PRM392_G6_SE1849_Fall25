@@ -44,52 +44,64 @@ public class RoomRepository {
     }
 
     private void initializeSampleData() {
-        // Check if data already exists
+        // Check if data already exists - DON'T clear existing data!
         if (roomDao.getRoomCount() > 0) {
-            return;
+            return; // Data exists, don't reinitialize
         }
 
-        // Sample data
+        // Only initialize sample data if database is empty
         List<Room> sampleRooms = Arrays.asList(
-            new Room("Deluxe Ocean View", "Phòng cao cấp view biển tuyệt đẹp", 150,
-                "room1.jpg", "Vũng Tàu", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
-                5, "Deluxe", 2, "room1_1.jpg,room1_2.jpg,room1_3.jpg"),
+                new Room("Deluxe Ocean View", "Phòng cao cấp view biển tuyệt đẹp", 150,
+                        "hotel_1", "Vũng Tàu", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
+                        5, "Deluxe", 2, "hotel_1,hotel_2,hotel_3"),
 
-            new Room("Standard Double Room", "Phòng đôi tiêu chuẩn thoải mái", 80,
-                "room2.jpg", "Hà Nội", "WiFi miễn phí, Điều hòa, Tivi",
-                4, "Double", 2, "room2_1.jpg,room2_2.jpg"),
+                new Room("Standard Double Room", "Phòng đôi tiêu chuẩn thoải mái", 80,
+                        "hotel_2", "Hà Nội", "WiFi miễn phí, Điều hòa, Tivi",
+                        4, "Double", 2, "hotel_1,hotel_2,hotel_3"),
 
-            new Room("Executive Suite", "Suite cao cấp dành cho doanh nhân", 250,
-                "room3.jpg", "TP.HCM", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bàn làm việc",
-                5, "Suite", 4, "room3_1.jpg,room3_2.jpg,room3_3.jpg,room3_4.jpg"),
+                new Room("Executive Suite", "Suite cao cấp dành cho doanh nhân", 250,
+                        "hotel_3", "TP.HCM", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bàn làm việc",
+                        5, "Suite", 4, "hotel_1,hotel_2,hotel_3"),
 
-            new Room("Single Room", "Phòng đơn tiện nghi", 60,
-                "room4.jpg", "Đà Nẵng", "WiFi miễn phí, Điều hòa, Tivi",
-                3, "Single", 1, "room4_1.jpg,room4_2.jpg"),
+                new Room("Single Room", "Phòng đơn tiện nghi", 60,
+                        "resort_1", "Đà Nẵng", "WiFi miễn phí, Điều hòa, Tivi",
+                        3, "Single", 1, "resort_1,resort_2,resort_3"),
 
-            new Room("Family Room", "Phòng gia đình rộng rãi", 120,
-                "room5.jpg", "Nha Trang", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
-                4, "Family", 4, "room5_1.jpg,room5_2.jpg,room5_3.jpg"),
+                new Room("Family Room", "Phòng gia đình rộng rãi", 120,
+                        "resort_2", "Nha Trang", "WiFi miễn phí, Điều hòa, Tivi, Minibar",
+                        4, "Family", 4, "resort_1,resort_2,resort_3"),
 
-            new Room("Luxury Penthouse", "Căn penthouse sang trọng", 400,
-                "room6.jpg", "TP.HCM", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bàn làm việc, Jacuzzi",
-                5, "Suite", 6, "room6_1.jpg,room6_2.jpg,room6_3.jpg,room6_4.jpg"),
+                new Room("Luxury Penthouse", "Căn penthouse sang trọng", 400,
+                        "resort_3", "TP.HCM", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bàn làm việc, Jacuzzi",
+                        5, "Suite", 6, "resort_1,resort_2,resort_3"),
 
-            new Room("Budget Single", "Phòng đơn giá rẻ", 35,
-                "room7.jpg", "Hà Nội", "WiFi miễn phí, Điều hòa",
-                2, "Single", 1, "room7_1.jpg,room7_2.jpg"),
+                new Room("Budget Single", "Phòng đơn giá rẻ", 35,
+                        "villa_1", "Hà Nội", "WiFi miễn phí, Điều hòa",
+                        2, "Single", 1, "villa_1,villa_2,villa_3"),
 
-            new Room("Garden View Double", "Phòng đôi view vườn", 90,
-                "room8.jpg", "Đà Lạt", "WiFi miễn phí, Điều hòa, Tivi, Ban công",
-                4, "Double", 2, "room8_1.jpg,room8_2.jpg,room8_3.jpg"),
+                new Room("Garden View Double", "Phòng đôi view vườn", 90,
+                        "villa_2", "Đà Lạt", "WiFi miễn phí, Điều hòa, Tivi, Ban công",
+                        4, "Double", 2, "villa_1,villa_2,villa_3"),
 
-            new Room("Beach Villa", "Villa bên bãi biển riêng tư", 350,
-                "room9.jpg", "Phú Quốc", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bếp, Hồ bơi riêng",
-                5, "Villa", 8, "room9_1.jpg,room9_2.jpg,room9_3.jpg,room9_4.jpg"),
+                new Room("Beach Villa", "Villa bên bãi biển riêng tư", 350,
+                        "villa_3", "Phú Quốc", "WiFi miễn phí, Điều hòa, Tivi, Minibar, Bếp, Hồ bơi riêng",
+                        5, "Villa", 8, "villa_1,villa_2,villa_3"),
 
-            new Room("Hostel Bed", "Giường trong ký túc xá", 25,
-                "room10.jpg", "Hà Nội", "WiFi miễn phí, Tủ khóa cá nhân",
-                3, "Hostel", 1, "room10_1.jpg,room10_2.jpg")
+                new Room("Hostel Bed", "Giường trong ký túc xá", 25,
+                        "hostel_1", "Hà Nội", "WiFi miễn phí, Tủ khóa cá nhân",
+                        3, "Hostel", 1, "hostel_1,hostel_2,hostel_3"),
+
+                new Room("Cozy Apartment", "Căn hộ ấm cúng tiện nghi", 110,
+                        "apartment_1", "TP.HCM", "WiFi miễn phí, Điều hòa, Tivi, Bếp, Máy giặt",
+                        4, "Apartment", 3, "apartment_1,apartment_2,apartment_3"),
+
+                new Room("Modern Apartment", "Căn hộ hiện đại view thành phố", 130,
+                        "apartment_2", "Hà Nội", "WiFi miễn phí, Điều hòa, Tivi, Bếp, Máy giặt, Ban công",
+                        5, "Apartment", 4, "apartment_1,apartment_2,apartment_3"),
+
+                new Room("Studio Apartment", "Căn hộ studio đầy đủ tiện nghi", 95,
+                        "apartment_3", "Đà Nẵng", "WiFi miễn phí, Điều hòa, Tivi, Bếp nhỏ",
+                        4, "Studio", 2, "apartment_1,apartment_2,apartment_3")
         );
 
         roomDao.insertRooms(sampleRooms);

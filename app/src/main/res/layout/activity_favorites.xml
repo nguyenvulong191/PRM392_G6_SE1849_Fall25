@@ -1,54 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="#111416">
 
-    <!-- Header with back button -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Material Toolbar with gradient background -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/bg_toolbar_gradient"
+        android:title="Phòng yêu thích"
+        android:titleTextColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:navigationIconTint="@android:color/white" />
+
+    <!-- Title Section -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="⭐ Danh sách yêu thích"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topAppBar" />
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← Quay lại"
-            android:background="@drawable/btn_outline_white_rounded"
-            android:textColor="@color/black"
-            android:padding="8dp" />
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Những phòng bạn đã lưu"
+        android:textColor="#B3FFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+    <!-- Empty message with better styling -->
+    <LinearLayout
+        android:id="@+id/emptyLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Phòng yêu thích"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:text="⭐"
+            android:textSize="64sp" />
 
+        <TextView
+            android:id="@+id/tvEmptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Chưa có phòng yêu thích"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Hãy thêm phòng vào danh sách\nyêu thích để xem ở đây!"
+            android:textColor="#B3FFFFFF"
+            android:textSize="14sp" />
     </LinearLayout>
 
-    <!-- Empty message -->
-    <TextView
-        android:id="@+id/tvEmptyMessage"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="Chưa có phòng nào được yêu thích\n\nHãy thêm phòng vào danh sách yêu thích để xem ở đây! ⭐"
-        android:textSize="16sp"
-        android:textColor="#666"
-        android:gravity="center"
-        android:visibility="gone" />
-
-    <!-- Favorites list -->
+    <!-- Favorites list with proper styling -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

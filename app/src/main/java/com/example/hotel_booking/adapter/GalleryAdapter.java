@@ -47,8 +47,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         }
 
         public void bind(String imageUrl) {
-            // For demo purposes, using placeholder
-            ivGallery.setImageResource(R.drawable.bg_welcome);
+            // Load image from drawable resources
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                // Remove file extension if present
+                String imageName = imageUrl.trim().replace(".jpg", "").replace(".png", "");
+                int resourceId = itemView.getContext().getResources()
+                    .getIdentifier(imageName, "drawable", itemView.getContext().getPackageName());
+
+                if (resourceId != 0) {
+                    ivGallery.setImageResource(resourceId);
+                } else {
+                    // Fallback to placeholder if resource not found
+                    ivGallery.setImageResource(R.drawable.bg_welcome);
+                }
+            } else {
+                ivGallery.setImageResource(R.drawable.bg_welcome);
+            }
         }
     }
 }
