@@ -49,23 +49,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Mật khẩu cũ"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp" />
+        android:inputType="textPassword"/>
 
     <EditText
         android:id="@+id/etNewPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Mật khẩu mới"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp" />
+        android:inputType="textPassword"/>
+
+    <EditText
+        android:id="@+id/etConfirmNewPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Xác nhận mật khẩu mới"
+        android:inputType="textPassword"/>
 
     <Button
         android:id="@+id/btnUpdate"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cập nhật"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp" />
+        android:text="Cập nhật"/>
 
 </LinearLayout>

@@ -30,7 +30,12 @@ import com.example.hotel_booking.ui.CategoryAdapter;
 import com.example.hotel_booking.ui.HotelCardAdapter;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
-import com.example.hotel_booking.ProfileActivity;
+
+import android.content.SharedPreferences;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +46,22 @@ public class MainActivity extends AppCompatActivity {
     private List<HotelCard> allCards = new ArrayList<>();
     private HotelCardAdapter hotelAdp;
     private RoomRepository roomRepository;
+
+    private SharedPreferences prefs;
+    private TextView tvHeaderName;
+    private TextView tvHeaderEmail;
+    private TextView tvHello;
+
+    private final ActivityResultLauncher<Intent> profileLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                // Kiểm tra xem ProfileActivity có trả về kết quả OK hay không
+                // (ProfileActivity sẽ trả về OK nếu user cập nhật thành công)
+                if (result.getResultCode() == RESULT_OK) {
+                    // Nếu thành công, load lại thông tin user để cập nhật UI
+                    loadUserProfile();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,20 +98,28 @@ public class MainActivity extends AppCompatActivity {
             DrawableCompat.setTint(toolbar.getNavigationIcon(), android.graphics.Color.WHITE);
 
         View header = navView.getHeaderView(0);
-        TextView tvHeaderName = header.findViewById(R.id.tvHeaderName);
-        TextView tvHeaderEmail = header.findViewById(R.id.tvHeaderEmail);
+        // === THAY ĐỔI: Gán vào biến của class (không khai báo mới) ===
+        tvHeaderName = header.findViewById(R.id.tvHeaderName);
+        tvHeaderEmail = header.findViewById(R.id.tvHeaderEmail);
+        tvHello = findViewById(R.id.tvHello);
 
-        String name = getSharedPreferences("hotel_auth", MODE_PRIVATE).getString("full_name", "Guest");
-        String email = getSharedPreferences("hotel_auth", MODE_PRIVATE).getString("email", "guest@example.com");
-        tvHeaderName.setText(name);
-        tvHeaderEmail.setText(email);
+        // === THAY ĐỔI: Khởi tạo SharedPreferences của class ===
+        prefs = getSharedPreferences("hotel_auth", MODE_PRIVATE);
+
+        // === THAY ĐỔI: Gọi hàm loadUserProfile để tải dữ liệu lần đầu ===
+        loadUserProfile();
+        // (Đã xóa các dòng getString và setText thủ công ở đây)
+        // =======================================================
 
         navView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
                 item.setChecked(true);
             } else if (id == R.id.nav_user) {
-                startActivity(new Intent(this, ProfileActivity.class)); // Mở ProfileActivity
+                // === THAY ĐỔI: Dùng launcher để mở ProfileActivity ===
+                Intent intent = new Intent(this, ProfileActivity.class);
+                profileLauncher.launch(intent);
+                // ====================================================
             } else if (id == R.id.nav_fav) {
                 startActivity(new Intent(this, FavoritesActivity.class));
             } else if (id == R.id.nav_cart) {
@@ -106,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
-        TextView tvHello = findViewById(R.id.tvHello);
-        tvHello.setText("Hello " + first);
+        // === THAY ĐỔI: Gán vào biến của class (không khai báo mới) ===
+        // (Đã xóa các dòng setText ở đây, vì loadUserProfile đã xử lý)
+        // =======================================================
 
         Button btnRooms = findViewById(R.id.btnRooms);
         Button btnFavorites = findViewById(R.id.btnFavorites);
@@ -152,6 +181,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void loadUserProfile() {
+        // Đọc dữ liệu mới nhất
+        String name = prefs.getString("full_name", "Guest");
+        String email = prefs.getString("email", "guest@example.com");
+
+        // Cập nhật Header của Navigation Drawer
+        if (tvHeaderName != null) {
+            tvHeaderName.setText(name);
+        }
+        if (tvHeaderEmail != null) {
+            tvHeaderEmail.setText(email);
+        }
+
+        // Cập nhật TextView "Hello"
+        String first = name != null ? name.trim().split("\\s+")[0] : "Guest";
+        if (tvHello != null) {
+            tvHello.setText("Hello " + first);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
