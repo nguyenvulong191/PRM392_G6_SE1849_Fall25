@@ -1,5 +1,7 @@
 package com.example.hotel_booking;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hotel_booking.data.entity.Booking;
+
 import java.util.List;
 
 public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAdapter.BookingViewHolder> {
 
+    private final Context context;
     private final List<Booking> list;
 
-    public BookingHistoryAdapter(List<Booking> list) {
+    public BookingHistoryAdapter(Context context, List<Booking> list) {
+        this.context = context;
         this.list = list;
     }
 
@@ -31,13 +36,18 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
     public void onBindViewHolder(@NonNull BookingViewHolder h, int pos) {
         Booking b = list.get(pos);
 
-        h.tvRoom.setText("🏨 Phòng: " + b.getRoomType());
-        h.tvGuest.setText("👤 Khách: " + b.getGuestName());
-        h.tvDate.setText("📅 " + b.getDate());
-        h.tvAddons.setText("🧾 Dịch vụ thêm:\n" + b.getAddons());
-        h.tvNote.setText("📝 Ghi chú: " + b.getNote());
-        h.tvPrice.setText(String.format("💵 Tổng tiền: $%.2f", b.getTotalPrice()));
+        // Thông tin rút gọn
+        h.tvRoomName.setText("🏨 " + b.getRoomType());
+        h.tvDateRange.setText("📅 " + b.getCheckInDate() + " → " + b.getCheckOutDate());
+        h.tvTotalPrice.setText(String.format("💵 $%.2f", b.getTotalPrice()));
 
+        // Click mở chi tiết
+        h.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, BookingDetailActivity.class);
+            intent.putExtra("booking_id", b.getId());
+            intent.putExtra("room_image", b.getRoomImage());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -46,17 +56,13 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
     }
 
     static class BookingViewHolder extends RecyclerView.ViewHolder {
-        TextView tvRoom, tvGuest, tvDate, tvPrice, tvAddons, tvNote;
+        TextView tvRoomName, tvDateRange, tvTotalPrice;
 
         BookingViewHolder(@NonNull View v) {
             super(v);
-            tvRoom = v.findViewById(R.id.tvRoom);
-            tvGuest = v.findViewById(R.id.tvGuest);
-            tvDate = v.findViewById(R.id.tvDate);
-            tvPrice = v.findViewById(R.id.tvPrice);
-            tvAddons = v.findViewById(R.id.tvAddons);
-            tvNote = itemView.findViewById(R.id.tvNote);
-
+            tvRoomName = v.findViewById(R.id.tvRoomName);
+            tvDateRange = v.findViewById(R.id.tvDateRange);
+            tvTotalPrice = v.findViewById(R.id.tvTotalPrice);
         }
     }
 }

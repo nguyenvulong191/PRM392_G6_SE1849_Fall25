@@ -62,7 +62,7 @@ public class BookingHistoryActivity extends AppCompatActivity {
                 if (list == null || list.isEmpty()) {
                     tvEmpty.setVisibility(View.VISIBLE);
                 } else {
-                    rvHistory.setAdapter(new BookingHistoryAdapter(list));
+                    rvHistory.setAdapter(new BookingHistoryAdapter(BookingHistoryActivity.this, list));
                 }
             });
         }).start();

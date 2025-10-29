@@ -21,6 +21,10 @@
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".PaymentActivity" />
         <activity android:name=".ProfileActivity"/>
+        <activity
+            android:name=".BookingDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
         <activity
             android:name=".WelcomeActivity"

@@ -27,9 +27,15 @@ public class Booking {
     private int userId;
 
     @ColumnInfo(name = "addons")
-    private String addons; // 🆕 dịch vụ thêm (ví dụ: Bữa sáng, Đưa đón sân bay)
+    private String addons;
+
     @ColumnInfo(name = "note")
     private String note;
+
+    // ✅ Thêm trường ảnh phòng
+    @ColumnInfo(name = "room_image")
+    private String roomImage;
+
     @Ignore private String checkInDate;
     @Ignore private String checkOutDate;
 
@@ -66,8 +72,14 @@ public class Booking {
 
     public String getAddons() { return addons; }
     public void setAddons(String addons) { this.addons = addons; }
+
     public String getNote() { return note; }
     public void setNote(String note) { this.note = note; }
+
+    // ✅ Thêm getter/setter cho ảnh
+    public String getRoomImage() { return roomImage; }
+    public void setRoomImage(String roomImage) { this.roomImage = roomImage; }
+
     public String getCheckInDate() { return checkInDate; }
     public void setCheckInDate(String checkInDate) {
         this.checkInDate = checkInDate;
@@ -79,7 +91,6 @@ public class Booking {
         this.checkOutDate = checkOutDate;
         rebuildDate();
     }
-
 
     private void rebuildDate() {
         if (checkInDate == null && checkOutDate == null) return;
