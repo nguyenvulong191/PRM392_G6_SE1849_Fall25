@@ -27,7 +27,7 @@ public interface UserDao {
     String getNameByEmail(String email);
 
     @Update
-    void update(User user);
+    int update(User user);
 
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     User getUserByEmail(String email);
