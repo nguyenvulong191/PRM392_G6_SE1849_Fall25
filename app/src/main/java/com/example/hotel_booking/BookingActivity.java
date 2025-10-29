@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.hotel_booking.common.AppExecutors;
 import com.example.hotel_booking.data.database.AppDatabase;
 import com.example.hotel_booking.data.entity.Booking;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,6 +35,8 @@ public class BookingActivity extends AppCompatActivity {
     private String roomName, roomType;
     private double roomPrice;
     private int capacity;
+    private String roomImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +68,7 @@ public class BookingActivity extends AppCompatActivity {
         roomPrice = getIntent().getDoubleExtra("room_price", 0);
         roomType = getIntent().getStringExtra("room_type");
         capacity = getIntent().getIntExtra("room_capacity", 0);
+        roomImage = getIntent().getStringExtra("room_image");
 
         tvRoomInfo.setText(String.format(
                 "Phòng: %s (%s)\nGiá: $%.2f/đêm\nSức chứa: %d người",
@@ -72,11 +76,19 @@ public class BookingActivity extends AppCompatActivity {
         ));
     }
 
+
     private void setupListeners() {
         btnConfirmBooking.setOnClickListener(v -> confirmBooking());
         btnBackHome.setOnClickListener(v -> {
             Intent intent = new Intent(BookingActivity.this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+        MaterialToolbar toolbar = findViewById(R.id.topAppBarBooking);
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(BookingActivity.this, RoomDetailActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             finish();
         });

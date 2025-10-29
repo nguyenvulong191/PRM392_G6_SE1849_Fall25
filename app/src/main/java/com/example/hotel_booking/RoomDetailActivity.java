@@ -173,6 +173,8 @@ public class RoomDetailActivity extends AppCompatActivity {
         intent.putExtra("room_price", currentRoom.getPrice());
         intent.putExtra("room_type", currentRoom.getRoomType());
         intent.putExtra("room_capacity", currentRoom.getCapacity());
+        intent.putExtra("room_image", currentRoom.getImageUrl());
+
         startActivity(intent);
     }
 }

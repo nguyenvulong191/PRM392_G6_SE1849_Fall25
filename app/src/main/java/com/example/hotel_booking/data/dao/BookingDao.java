@@ -22,4 +22,6 @@ public interface BookingDao {
 
     @Query("DELETE FROM booking WHERE id = :id")
     void deleteById(int id);
+    @Query("SELECT * FROM booking WHERE id = :id LIMIT 1")
+    Booking getBookingById(int id);
 }
