@@ -4,18 +4,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.hotel_booking.data.UserRepository;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -25,15 +25,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class EditProfileActivity extends AppCompatActivity {
     private EditText etName;
     private Button btnSaveProfile;
-    private ImageButton btnBackEdit;
     private CircleImageView ivProfileEdit;
+    private EditText etEmailEdit;
+
+    private MaterialToolbar toolbar;
 
     private UserRepository userRepository;
     private SharedPreferences prefs;
     private Uri newAvatarUri = null;
     private String email;
     private String currentName;
-    private EditText etEmailEdit;
+
     private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
@@ -51,7 +53,6 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(getResources().getColor(android.R.color.black, getTheme()));
         setContentView(R.layout.activity_edit_profile);
 
         userRepository = new UserRepository(this);
@@ -60,26 +61,37 @@ public class EditProfileActivity extends AppCompatActivity {
         currentName = prefs.getString("full_name", "Guest");
 
         initViews();
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         loadData();
 
-        btnBackEdit.setOnClickListener(v -> finish());
         ivProfileEdit.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
         btnSaveProfile.setOnClickListener(v -> updateProfile());
     }
 
     private void initViews() {
+        toolbar = findViewById(R.id.toolbarEditProfile);
         etName = findViewById(R.id.etNameEdit);
         btnSaveProfile = findViewById(R.id.btnSaveProfile);
-        btnBackEdit = findViewById(R.id.btnBackEdit);
         ivProfileEdit = findViewById(R.id.ivProfileEdit);
         etEmailEdit = findViewById(R.id.etEmailEdit);
     }
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     private void loadData() {
-        // Tải tên
         etName.setText(currentName);
         etEmailEdit.setText(email);
-        // Tải ảnh
         String avatarUriString = prefs.getString("avatar_uri", null);
         if (avatarUriString != null) {
             try {
@@ -102,41 +114,43 @@ public class EditProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Cờ báo hiệu có thành công hay không
-        final boolean[] nameUpdateSuccess = {true}; // Mặc định là true nếu không đổi tên
-        final boolean[] avatarUpdateSuccess = {true}; // Mặc định là true nếu không đổi avatar
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
 
-        // 1. Cập nhật Tên (nếu có)
-        if (isNameChanged) {
-            Executor executor = Executors.newSingleThreadExecutor();
-            executor.execute(() -> {
+            boolean nameUpdateOK = true;
+            boolean avatarUpdateOK = true;
+
+            if (isNameChanged) {
                 boolean success = userRepository.updateUserName(email, newName);
                 if (success) {
                     prefs.edit().putString("full_name", newName).apply();
-                    nameUpdateSuccess[0] = true;
+                    nameUpdateOK = true;
                 } else {
-                    nameUpdateSuccess[0] = false;
+                    nameUpdateOK = false;
+                }
+            }
+
+            if (isAvatarChanged) {
+                try {
+                    prefs.edit().putString("avatar_uri", newAvatarUri.toString()).apply();
+                    avatarUpdateOK = true;
+                } catch (Exception e) {
+                    avatarUpdateOK = false;
+                }
+            }
+
+            boolean finalNameUpdateOK = nameUpdateOK;
+            boolean finalAvatarUpdateOK = avatarUpdateOK;
+
+            runOnUiThread(() -> {
+                if (finalNameUpdateOK && finalAvatarUpdateOK) {
+                    Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    Toast.makeText(this, "Cập nhật tên thất bại", Toast.LENGTH_SHORT).show();
                 }
             });
-        }
-
-        // 2. Cập nhật Ảnh (nếu có)
-        if (isAvatarChanged) {
-            try {
-                prefs.edit().putString("avatar_uri", newAvatarUri.toString()).apply();
-                avatarUpdateSuccess[0] = true;
-            } catch (Exception e) {
-                avatarUpdateSuccess[0] = false;
-            }
-        }
-
-        // 3. Hiển thị kết quả (Giả sử luồng chạy đủ nhanh, nếu không cần dùng CountDownLatch)
-        if (nameUpdateSuccess[0] && avatarUpdateSuccess[0]) {
-            Toast.makeText(this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK); // Báo cho ProfileActivity biết để load lại
-            finish();
-        } else {
-            Toast.makeText(this, "Có lỗi xảy ra", Toast.LENGTH_SHORT).show();
-        }
+        });
     }
 }
