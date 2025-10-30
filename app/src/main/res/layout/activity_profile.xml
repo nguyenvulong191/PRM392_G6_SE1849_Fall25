@@ -1,77 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/black"
-    android:paddingTop="16dp"
     tools:context=".ProfileActivity">
 
-    <ImageButton
-        android:id="@+id/btnBackProfile"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_arrow_back"
-        app:tint="@android:color/white"
-        android:contentDescription="Back" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarProfile"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/brand_end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Tài khoản"
+        app:titleTextColor="@android:color/white" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivProfile"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:src="@mipmap/ic_launcher"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="2dp" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/toolbarProfile"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/tvEmailValue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="32dp"
-        android:text="guest@example.com"
-        android:textColor="@android:color/white"
-        android:textSize="18sp" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="32dp"
+            android:src="@mipmap/ic_launcher"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="2dp" />
 
-    <TextView
-        android:id="@+id/btnEditProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Thông tin cá nhân"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:padding="20dp"
-        android:background="?attr/selectableItemBackground"
-        android:drawableEnd="@drawable/ic_arrow_forward"
-        app:drawableTint="@android:color/white" />
+        <TextView
+            android:id="@+id/tvEmailValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="guest@example.com"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/btnChangePassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Đổi mật khẩu"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:padding="20dp"
-        android:background="?attr/selectableItemBackground"
-        android:drawableEnd="@drawable/ic_arrow_forward"
-        app:drawableTint="@android:color/white" />
+        <TextView
+            android:id="@+id/btnEditProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thông tin cá nhân"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:padding="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:drawableEnd="@drawable/ic_arrow_forward"
+            app:drawableTint="@android:color/white" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switchTheme"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chế độ tối"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:padding="20dp" />
+        <TextView
+            android:id="@+id/btnChangePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Đổi mật khẩu"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:padding="20dp"
+            android:background="?attr/selectableItemBackground"
+            android:drawableEnd="@drawable/ic_arrow_forward"
+            app:drawableTint="@android:color/white" />
 
-</LinearLayout>
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Chế độ tối"
+            android:textColor="@android:color/white"
+            android:textColorLink="#3F51B5"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

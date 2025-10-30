@@ -17,7 +17,6 @@ public class BookingStore {
 
     public BookingStore(Context ctx) { helper = new BookingDbHelper(ctx); }
 
-    // Lấy tất cả order by id DESC (thay cho createdAt)
     public List<Booking> getAllOrderByIdDesc() {
         SQLiteDatabase db = helper.getReadableDatabase();
         List<Booking> list = new ArrayList<>();
@@ -45,13 +44,12 @@ public class BookingStore {
         return list;
     }
 
-    // Insert (id AUTOINCREMENT nên KHÔNG set id)
     public long insert(Booking b) {
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues v = new ContentValues();
         v.put(BookingDbHelper.C_ROOM, b.getRoomType());
         v.put(BookingDbHelper.C_GUEST, b.getGuestName());
-        v.put(BookingDbHelper.C_DATE, b.getDate());         // "dd/MM/yyyy - dd/MM/yyyy"
+        v.put(BookingDbHelper.C_DATE, b.getDate());
         v.put(BookingDbHelper.C_PRICE, b.getTotalPrice());
         v.put(BookingDbHelper.C_USER_ID, b.getUserId());
         return db.insert(BookingDbHelper.TBL_BOOKING, null, v);
