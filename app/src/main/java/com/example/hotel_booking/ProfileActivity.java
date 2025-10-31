@@ -24,7 +24,6 @@ public class ProfileActivity extends AppCompatActivity {
     private SwitchMaterial switchTheme;
     private SharedPreferences prefs;
 
-    // === Launcher MỚI (Giữ nguyên) ===
     private final ActivityResultLauncher<Intent> editProfileLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -36,7 +35,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Tải theme TRƯỚC khi setContentView
         prefs = getSharedPreferences("hotel_auth", MODE_PRIVATE);
         applyTheme();
 
@@ -45,7 +43,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         initViews();
 
-        // === THÊM MỚI: SETUP TOOLBAR ===
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -82,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            onBackPressed(); // Hoặc finish();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -104,7 +101,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private boolean isDarkMode() {
-        return prefs.getBoolean("dark_mode", true); // Mặc định là tối
+        return prefs.getBoolean("dark_mode", true);
     }
 
     private void applyTheme() {

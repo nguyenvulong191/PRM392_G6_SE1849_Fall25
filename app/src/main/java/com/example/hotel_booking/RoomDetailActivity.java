@@ -118,22 +118,18 @@ public class RoomDetailActivity extends AppCompatActivity {
             tvAmenities.setText(formattedAmenities.toString());
         }
 
-        // Set favorite icon
         updateFavoriteIcon();
 
-        // Set favorite click listener
         ivFavorite.setOnClickListener(v -> toggleFavorite());
     }
 
     private void setupGallery() {
-        // Parse gallery images from JSON string
         String gallery = currentRoom.getGallery();
         List<String> galleryImages;
 
         if (gallery != null && !gallery.isEmpty()) {
             galleryImages = Arrays.asList(gallery.split(","));
         } else {
-            // Fallback to main image
             galleryImages = Arrays.asList(currentRoom.getImageUrl());
         }
 
@@ -151,10 +147,8 @@ public class RoomDetailActivity extends AppCompatActivity {
     private void toggleFavorite() {
         boolean newFavoriteStatus = !currentRoom.isFavorite();
         AppExecutors.io().execute(() -> {
-            // Update DB first
             roomRepository.updateFavoriteStatus(currentRoom.getId(), newFavoriteStatus);
 
-            // Then update local object
             currentRoom.setFavorite(newFavoriteStatus);
 
             runOnUiThread(() -> {

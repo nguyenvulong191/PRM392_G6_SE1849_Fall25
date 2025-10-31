@@ -18,10 +18,8 @@ public class User {
     private String email;
     private String password;
 
-    // Constructor rỗng: Room sẽ dùng cái này
     public User() {}
 
-    // Constructor có tham số: chỉ dùng trong code, KHÔNG cho Room dùng
     @Ignore
     public User(String name, String email, String password) {
         this.name = name;
@@ -29,7 +27,6 @@ public class User {
         this.password = password;
     }
 
-    // Getters/Setters...
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getName() { return name; }

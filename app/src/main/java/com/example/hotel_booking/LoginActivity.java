@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                         getSharedPreferences("hotel_auth", MODE_PRIVATE)
                                 .edit()
                                 .putBoolean("logged_in", true)
-                                .putInt("user_id", u.getId())     // QUAN TRỌNG
+                                .putInt("user_id", u.getId())
                                 .putString("email", email)
                                 .putString("full_name", u.getName())
                                 .apply();

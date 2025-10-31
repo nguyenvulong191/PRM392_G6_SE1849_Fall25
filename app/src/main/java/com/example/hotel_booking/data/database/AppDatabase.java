@@ -53,7 +53,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     "hotel_booking.db"
                             )
-                            .fallbackToDestructiveMigration() // 🔥 thêm dòng này
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }

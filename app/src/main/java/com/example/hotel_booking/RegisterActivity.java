@@ -56,7 +56,6 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                // TODO (tuỳ chọn): hash pass trước khi lưu
                 long rowId = repo.insertUser(name, email, pass);
 
                 runOnUiThread(() -> {
