@@ -154,53 +154,37 @@ public class BookingActivity extends AppCompatActivity {
 
         if (cbBreakfast.isChecked()) {
             totalPrice += 10;
-            addons.append("- Bữa sáng\n");
+            addons.append("Bữa sáng, ");
         }
         if (cbPickup.isChecked()) {
             totalPrice += 20;
-            addons.append("- Đưa đón sân bay\n");
+            addons.append("Đưa đón sân bay, ");
         }
         if (cbSpa.isChecked()) {
             totalPrice += 30;
-            addons.append("- Dịch vụ spa\n");
+            addons.append("Spa, ");
         }
         if (cbDinner.isChecked()) {
             totalPrice += 25;
-            addons.append("- Bữa tối sang trọng\n");
+            addons.append("Bữa tối, ");
         }
 
+        String addonsText = addons.length() > 0
+            ? addons.substring(0, addons.length() - 2)
+            : "Không có";
 
-        String reviewText = String.format(
-                "✅ Đặt phòng thành công!\n\nPhòng: %s\nLoại: %s\nNgày: %s → %s\nDịch vụ thêm:\n%s📝 Ghi chú: %s\nTổng giá: $%.2f",
-                roomName, roomType, checkIn, checkOut,
-                addons.length() == 0 ? "(Không chọn)\n" : addons.toString(),
-                noteText.isEmpty() ? "(Không có ghi chú)" : noteText,
-                totalPrice
-        );
-
-        tvReview.setText(reviewText);
-        tvReview.setVisibility(View.VISIBLE);
-        btnBackHome.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Đặt phòng thành công!", Toast.LENGTH_SHORT).show();
-
-        // Lưu booking vào database
         int uid = getSharedPreferences("hotel_auth", MODE_PRIVATE).getInt("user_id", 0);
-        String guestDisplayName = getSharedPreferences("hotel_auth", MODE_PRIVATE)
-                .getString("full_name", "Khách");
 
-        Booking b = new Booking();
-        b.setRoomType(roomType);
-        b.setGuestName(guestDisplayName);
-        b.setCheckInDate(checkIn);
-        b.setCheckOutDate(checkOut);
-        b.setTotalPrice(totalPrice);
-        b.setUserId(uid > 0 ? uid : 1); // đảm bảo luôn có user id
-        b.setAddons(addons.length() == 0 ? "(Không chọn)" : addons.toString());
-        b.setNote(noteText.isEmpty() ? "(Không có ghi chú)" : noteText);
-        AppExecutors.io().execute(() ->
-                AppDatabase.getInstance(getApplicationContext())
-                        .insertBooking(b)
-        );
+        Intent intent = new Intent(BookingActivity.this, PaymentActivity.class);
+        intent.putExtra("room_type", roomType);
+        intent.putExtra("check_in_date", checkIn);
+        intent.putExtra("check_out_date", checkOut);
+        intent.putExtra("addons", addonsText);
+        intent.putExtra("note", noteText.isEmpty() ? "Không có ghi chú" : noteText);
+        intent.putExtra("total_price", totalPrice);
+        intent.putExtra("user_id", uid > 0 ? uid : 1);
+        intent.putExtra("room_image", roomImage);
+        startActivity(intent);
     }
 
 }

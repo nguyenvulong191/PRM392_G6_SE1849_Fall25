@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 public class PaymentActivity extends AppCompatActivity {
 
     @Override
@@ -12,8 +14,18 @@ public class PaymentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
 
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+
         if (savedInstanceState == null) {
-            loadFragment(new PaymentMethodFragment());
+            Bundle bundle = getIntent().getExtras();
+
+            PaymentMethodFragment fragment = new PaymentMethodFragment();
+            if (bundle != null) {
+                fragment.setArguments(bundle);
+            }
+
+            loadFragment(fragment);
         }
     }
 

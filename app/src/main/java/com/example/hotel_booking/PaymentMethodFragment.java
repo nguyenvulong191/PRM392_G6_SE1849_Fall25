@@ -1,81 +1,138 @@
 package com.example.hotel_booking;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+
+import com.example.hotel_booking.common.AppExecutors;
+import com.example.hotel_booking.data.database.AppDatabase;
+import com.example.hotel_booking.data.entity.Booking;
 
 public class PaymentMethodFragment extends Fragment {
 
-    private RadioGroup rgPaymentMethod;
-    private RadioButton rbCreditCard, rbDebitCard, rbCash, rbPaypal;
-    private Button btnContinue;
-    private String selectedPaymentMethod = "";
+    private RadioButton rbVNPay, rbCash;
+    private CardView cardVNPay, cardCash;
+    private Button btnConfirmPayment;
+    private TextView tvBookingSummary;
+    private String selectedMethod = "VNPay";
+
+    private String roomType, checkInDate, checkOutDate, addons, note, roomImage;
+    private double totalPrice;
+    private int userId;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_payment_method, container, false);
+
         initViews(view);
+        loadBookingData();
         setupListeners();
+
         return view;
     }
 
     private void initViews(View view) {
-        rgPaymentMethod = view.findViewById(R.id.rgPaymentMethod);
-        rbCreditCard = view.findViewById(R.id.rbCreditCard);
-        rbDebitCard = view.findViewById(R.id.rbDebitCard);
+        rbVNPay = view.findViewById(R.id.rbVNPay);
         rbCash = view.findViewById(R.id.rbCash);
-        rbPaypal = view.findViewById(R.id.rbPaypal);
-        btnContinue = view.findViewById(R.id.btnContinue);
+
+        cardVNPay = view.findViewById(R.id.cardVNPay);
+        cardCash = view.findViewById(R.id.cardCash);
+
+        btnConfirmPayment = view.findViewById(R.id.btnConfirmPayment);
+        tvBookingSummary = view.findViewById(R.id.tvBookingSummary);
+
+        rbVNPay.setChecked(true);
+        selectedMethod = "VNPay";
+    }
+
+    private void loadBookingData() {
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            roomType = bundle.getString("room_type", "");
+            checkInDate = bundle.getString("check_in_date", "");
+            checkOutDate = bundle.getString("check_out_date", "");
+            addons = bundle.getString("addons", "");
+            note = bundle.getString("note", "");
+            totalPrice = bundle.getDouble("total_price", 0.0);
+            userId = bundle.getInt("user_id", 0);
+            roomImage = bundle.getString("room_image", "");
+
+            String summary = String.format(
+                "Phòng: %s\nNgày: %s → %s\nDịch vụ: %s\n\nTổng tiền: $%.2f",
+                roomType, checkInDate, checkOutDate, addons, totalPrice
+            );
+            tvBookingSummary.setText(summary);
+        }
     }
 
     private void setupListeners() {
-        rgPaymentMethod.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rbCreditCard) {
-                selectedPaymentMethod = "Credit Card";
-            } else if (checkedId == R.id.rbDebitCard) {
-                selectedPaymentMethod = "Debit Card";
-            } else if (checkedId == R.id.rbCash) {
-                selectedPaymentMethod = "Cash";
-            } else if (checkedId == R.id.rbPaypal) {
-                selectedPaymentMethod = "PayPal";
-            }
-        });
+        cardVNPay.setOnClickListener(v -> selectPaymentMethod(rbVNPay, "VNPay"));
+        cardCash.setOnClickListener(v -> selectPaymentMethod(rbCash, "Tiền mặt"));
 
-        btnContinue.setOnClickListener(v -> {
-            if (selectedPaymentMethod.isEmpty()) {
-                Toast.makeText(getContext(), "Please select a payment method", Toast.LENGTH_SHORT).show();
-            } else {
-                if (selectedPaymentMethod.equals("Cash")) {
-                    Toast.makeText(getContext(), "Cash payment selected", Toast.LENGTH_SHORT).show();
-                } else {
-                    navigateToPaymentInfo();
-                }
-            }
-        });
+        rbVNPay.setOnClickListener(v -> selectPaymentMethod(rbVNPay, "VNPay"));
+        rbCash.setOnClickListener(v -> selectPaymentMethod(rbCash, "Tiền mặt"));
+
+        btnConfirmPayment.setOnClickListener(v -> confirmPayment());
     }
 
-    private void navigateToPaymentInfo() {
-        Bundle bundle = new Bundle();
-        bundle.putString("payment_method", selectedPaymentMethod);
+    private void selectPaymentMethod(RadioButton selectedRadio, String method) {
+        rbVNPay.setChecked(false);
+        rbCash.setChecked(false);
 
-        PaymentInfoFragment paymentInfoFragment = new PaymentInfoFragment();
-        paymentInfoFragment.setArguments(bundle);
+        selectedRadio.setChecked(true);
+        selectedMethod = method;
+    }
 
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, paymentInfoFragment)
-                .addToBackStack(null)
-                .commit();
+    private void confirmPayment() {
+        if (selectedMethod.isEmpty()) {
+            Toast.makeText(getContext(), "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        saveBookingToDatabase();
+    }
+
+    private void saveBookingToDatabase() {
+        String guestName = requireActivity()
+                .getSharedPreferences("hotel_auth", requireContext().MODE_PRIVATE)
+                .getString("full_name", "Khách");
+
+        Booking booking = new Booking();
+        booking.setRoomType(roomType);
+        booking.setGuestName(guestName);
+        booking.setCheckInDate(checkInDate);
+        booking.setCheckOutDate(checkOutDate);
+        booking.setTotalPrice(totalPrice);
+        booking.setUserId(userId > 0 ? userId : 1);
+        booking.setAddons(addons);
+        booking.setNote(note);
+        booking.setRoomImage(roomImage);
+
+        AppExecutors.io().execute(() -> {
+            AppDatabase.getInstance(requireContext()).insertBooking(booking);
+
+            requireActivity().runOnUiThread(() -> {
+                Toast.makeText(getContext(), "Thanh toán thành công bằng " + selectedMethod + "!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getActivity(), BookingHistoryActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                requireActivity().finish();
+            });
+        });
     }
 }
 
