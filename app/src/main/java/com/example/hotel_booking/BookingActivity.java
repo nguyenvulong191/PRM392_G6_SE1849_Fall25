@@ -1,5 +1,7 @@
 package com.example.hotel_booking;
 
+import static android.content.Intent.getIntent;
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -170,8 +172,8 @@ public class BookingActivity extends AppCompatActivity {
         }
 
         String addonsText = addons.length() > 0
-            ? addons.substring(0, addons.length() - 2)
-            : "Không có";
+                ? addons.substring(0, addons.length() - 2)
+                : "Không có";
 
         int uid = getSharedPreferences("hotel_auth", MODE_PRIVATE).getInt("user_id", 0);
 
