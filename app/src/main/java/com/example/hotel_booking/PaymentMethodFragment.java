@@ -102,7 +102,34 @@ public class PaymentMethodFragment extends Fragment {
             return;
         }
 
-        saveBookingToDatabase();
+        // PHÂN LUỒNG LOGIC THANH TOÁN
+        if (selectedMethod.equals("VNPay")) {
+            // YÊU CẦU MỚI: Nếu là VNPay, chuyển sang màn hình VNPay
+
+            // 1. Tạo Intent để mở Activity mới (chúng ta sẽ tạo nó ở Bước 2)
+            Intent intent = new Intent(getActivity(), VnPayPaymentActivity.class);
+
+            // 2. Gửi tất cả thông tin đặt phòng sang Activity mới
+            //    để màn hình đó biết cần thanh toán bao nhiêu và lưu gì
+            intent.putExtra("room_type", roomType);
+            intent.putExtra("check_in_date", checkInDate);
+            intent.putExtra("check_out_date", checkOutDate);
+            intent.putExtra("addons", addons);
+            intent.putExtra("note", note);
+            intent.putExtra("total_price", totalPrice);
+            intent.putExtra("user_id", userId);
+            intent.putExtra("room_image", roomImage);
+
+            // 3. Bắt đầu Activity mới
+            startActivity(intent);
+
+            // Lưu ý: Chúng ta KHÔNG gọi saveBookingToDatabase() ở đây nữa
+            // Màn hình VnPayPaymentActivity sẽ tự xử lý việc đó
+
+        } else if (selectedMethod.equals("Tiền mặt")) {
+            // LOGIC CŨ: Nếu là Tiền mặt, lưu và chuyển đến Lịch sử
+            saveBookingToDatabase();
+        }
     }
 
     private void saveBookingToDatabase() {
